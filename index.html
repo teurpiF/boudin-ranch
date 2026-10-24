@@ -10,7 +10,6 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#21160f;color:#fff;font-family:system-ui,-apple-system,sans-serif;touch-action:none}
 #scene{position:absolute;inset:0;filter:blur(0px);transition:filter 1.4s}
 canvas{display:block;width:100%;height:100%}
-#brand{display:none;position:absolute;z-index:2;top:12%;left:50%;transform:translateX(-50%);padding:7px 14px;white-space:nowrap;background:#432617eF;border:3px solid #c28b50;border-radius:5px;font:1000 clamp(17px,4.8vw,29px) Georgia,serif;color:#ffe3ad;text-shadow:2px 3px #211006;box-shadow:0 5px #1b100a;pointer-events:none}
 .hud{position:absolute;z-index:4;top:env(safe-area-inset-top,8px);left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:12px;gap:8px;pointer-events:none}
 .panel{background:#2b1a10eF;border:2px solid #bd8950;border-radius:11px;padding:7px 11px;box-shadow:0 3px #160d08;color:#ffe3ad;font-weight:900;text-shadow:1px 2px #281409}
 #score{font-size:16px}#timer{font-size:23px;min-width:72px;text-align:center}
@@ -61,7 +60,6 @@ button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df
 <body>
 <div id="portraitNotice">BOUDIN RANCH<br><br>Pour jouer, tourne ton téléphone à la verticale.</div>
 <div id="scene"></div>
-<div id="brand">BOUDIN RANCH</div>
 <div class="hud"><div class="panel" id="score">SCORE&nbsp; 0</div><div class="panel" id="timer">TEMPS&nbsp; 60</div><button id="pause" aria-label="Pause">Ⅱ</button></div>
 <div id="tip">VISE LE PASSANT, PUIS GLISSE RAPIDEMENT LE DOIGT POUR LANCER !</div>
 <div id="aim" aria-hidden="true"></div><div id="throwHint">PASSANT : +10 &nbsp; • &nbsp; COCHON : +50</div><div id="toast"></div>
@@ -230,56 +228,45 @@ function tableSet(x,z,w=4.2){
 tableSet(-5,-.3,3.7);tableSet(1.3,-.9,4.0);tableSet(6,-.1,3.4);
 // Homme suspendu à la charpente, comme sur la photo du ranch : pose comique, sans bloquer les cibles.
 function hangingMan(){
- const g=new THREE.Group();g.position.set(3.35,8.75,-4.65);g.scale.set(1.12,1.12,1.12);scene.add(g);
- const yellow=mat(0xd5b52d),jeans=mat(0x24364d),hair=mat(0x211a16),face=mat(0xc99069),shirtDark=mat(0x332a22),skinLight=mat(0xd9a078);
- // Mains visibles autour de la poutre, doigts agrippés au bois.
- for(const x of [-.48,.48]){
-   ico(g,x,.28,.12,.14,.13,.13,skinLight,1);
-   for(let i=0;i<3;i++)ico(g,x+(i-1)*.065,.36,.2,.035,.12,.035,face,0);
-   const sleeve=box(g,x*.72,.03,.02,.22,.42,.23,yellow,0,0,x<0?-.32:.32);
-   box(g,x*.92,.29,.08,.13,.22,.15,shirtDark,0,0,x<0?-.3:.3);
+ // Personnage suspendu à une poutre, placé dans le champ de vision du portrait.
+ const g=new THREE.Group();g.position.set(3.45,8.25,-3.45);g.scale.set(1.05,1.05,1.05);scene.add(g);
+ const yellow=mat(0xe0bd31),jeans=mat(0x263a55),hair=mat(0x211713),skinTone=mat(0xc98e68),dark=mat(0x30251e),shoe=mat(0x171513);
+ // Bras levés et mains qui agrippent la poutre.
+ for(const side of [-1,1]){
+   const arm=box(g,side*.43,.05,0,.20,.58,.20,yellow,0,0,side<0?-.42:.42);
+   const fore=box(g,side*.59,.31,.035,.16,.42,.17,yellow,0,0,side<0?-.12:.12);
+   ico(g,side*.62,.54,.10,.13,.12,.12,skinTone,1);
+   for(let i=0;i<3;i++)box(g,side*(.55+i*.055),.62,.14,.045,.13,.045,skinTone,0,0,side<0?-.15:.15);
  }
- // Torse et col du maillot jaune, incliné sous l'effort.
- box(g,0,-.28,.02,.77,.83,.39,yellow,0,0,-.12);
- box(g,0,.08,.24,.25,.13,.04,shirtDark,0,0,-.12);
- // Tête tournée vers les clients, cheveux foncés et moustache bien marquée.
- const head=ico(g,.02,-.82,.12,.29,.33,.28,face,1);head.rotation.z=-.08;
- ico(g,.01,-.59,.1,.31,.14,.29,hair,1);
- ico(g,-.22,-.76,.13,.12,.18,.16,hair,0);ico(g,.23,-.77,.13,.11,.16,.15,hair,0);
- for(const ex of [-.09,.12]){
-   ico(g,ex,-.83,.365,.04,.04,.025,darkWood,0);
-   box(g,ex,-.77,.37,.095,.022,.02,hair,0,0,ex<0?-.12:.12);
+ // Torse du maillot jaune, avec col sombre et plis géométriques.
+ box(g,0,-.24,.02,.78,.76,.38,yellow,0,0,-.06);
+ box(g,0,.13,.23,.25,.11,.035,dark,0,0,-.06);
+ box(g,-.18,-.28,.225,.09,.42,.025,mat(0xc8a42a),0,0,-.08);
+ box(g,.18,-.28,.225,.09,.42,.025,mat(0xf0d04a),0,0,.08);
+ // Tête et cheveux, yeux, nez et moustache clairement séparés.
+ ico(g,0,-.78,.09,.30,.33,.27,skinTone,1);
+ ico(g,0,-.56,.08,.32,.15,.28,hair,1);
+ ico(g,-.25,-.72,.09,.10,.18,.15,hair,0);ico(g,.25,-.72,.09,.10,.18,.15,hair,0);
+ for(const ex of [-.105,.105]){
+   box(g,ex,-.79,.326,.085,.035,.025,hair,0,0,ex<0?-.08:.08);
+   ico(g,ex,-.82,.334,.025,.027,.018,mat(0xf1dfc5),0);
  }
- box(g,.02,-.91,.38,.22,.075,.045,hair,0,0,-.04); // moustache
- ico(g,.02,-1.02,.34,.12,.045,.035,face,0); // menton
- // Bras supérieurs, coudes et avant-bras qui remontent jusqu'aux mains.
- const upperL=box(g,-.42,-.1,.01,.19,.46,.19,yellow,0,0,-.36);
- const upperR=box(g,.42,-.1,.01,.19,.46,.19,yellow,0,0,.36);
- // Jambes qui pendent séparément, genoux et chaussures sombres.
- box(g,-.2,-1.36,.01,.24,.55,.24,jeans,0,0,-.12);
- box(g,.2,-1.38,.01,.24,.58,.24,jeans,0,0,.15);
- box(g,-.23,-1.72,.12,.3,.16,.42,shirtDark,0,0,-.08);
- box(g,.23,-1.74,.12,.3,.16,.42,shirtDark,0,0,.08);
+ ico(g,0,-.87,.34,.045,.075,.045,skinTone,0);
+ ico(g,-.075,-.92,.337,.09,.045,.035,hair,0);ico(g,.075,-.92,.337,.09,.045,.035,hair,0);
+ ico(g,0,-1.00,.31,.12,.035,.04,hair,0);
+ // Pantalon bleu, jambes qui pendent de façon asymétrique et chaussures.
+ box(g,-.20,-1.27,.01,.25,.56,.24,jeans,0,0,-.10);
+ box(g,.20,-1.30,.01,.25,.60,.24,jeans,0,0,.12);
+ box(g,-.23,-1.60,.09,.27,.18,.38,shoe,0,0,-.10);
+ box(g,.23,-1.64,.09,.27,.18,.38,shoe,0,0,.10);
+ // Petite ceinture visible entre le maillot et le pantalon.
+ box(g,0,-.78,.03,.48,.10,.28,dark);
 }
+// Corde courte et poutre au-dessus des mains pour que la suspension soit évidente.
+const hangRope=mat(0x6f4b2d);
+cyl(scene,3.45,9.05,-3.45,.035,.035,.72,hangRope,6);
 hangingMan();
-// Panneau unique suspendu devant la charpente : aucun doublon sur le mur arrière.
-const signBoard=mat(0x24150d),signEdge=mat(0xc58b4d),signFace=mat(0x321d11);
-box(scene,0,7.15,-3.65,7.4,1.22,.24,signEdge);
-box(scene,0,7.15,-3.49,7.16,1.00,.12,signBoard);
-// Petites attaches qui relient visuellement le panneau aux poutres.
-for(const x of [-3.1,3.1]){
-  cyl(scene,x,7.82,-3.65,.045,.045,.42,metal,6);
-  cyl(scene,x,7.72,-3.63,.085,.085,.09,signEdge,8);
-}
-const signCanvas=document.createElement('canvas');signCanvas.width=1400;signCanvas.height=240;
-const ctx=signCanvas.getContext('2d');ctx.fillStyle='#28170e';ctx.fillRect(0,0,1400,240);
-ctx.strokeStyle='#d7a05b';ctx.lineWidth=13;ctx.strokeRect(18,18,1364,204);
-ctx.font='900 142px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
-ctx.strokeStyle='#100904';ctx.lineWidth=15;ctx.strokeText('BOUDIN RANCH',700,123);
-ctx.fillStyle='#fff0cb';ctx.fillText('BOUDIN RANCH',700,123);
-const signTex=new THREE.CanvasTexture(signCanvas);signTex.colorSpace=THREE.SRGBColorSpace;signTex.anisotropy=4;
-const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(6.96,.88),new THREE.MeshBasicMaterial({map:signTex}));
-signMesh.position.set(0,7.15,-3.41);scene.add(signMesh);
+// Le panneau « BOUDIN RANCH » a été supprimé du décor, comme demandé.
 const targets=[];
 function makePerson(isPig=false){
  const g=new THREE.Group();scene.add(g);const cloth=isPig?pink:[red,blue,mat(0x5c6550),mat(0x8d623d)][Math.floor(Math.random()*4)];
@@ -301,7 +288,17 @@ function makePerson(isPig=false){
 }
 let score=0,elapsed=0,running=false,paused=false,last=0,spawnAt=0,gesture=null,toastTimer=0;
 function showToast(text){const el=document.getElementById('toast');el.textContent=text;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.textContent='',900)}
-function spawn(){const pig=Math.random()<.23,g=makePerson(pig),fromLeft=Math.random()<.5;g.position.set(fromLeft?-12:12,0,-5-Math.random()*4);g.scale.setScalar(.62+Math.random()*.16);g.userData.vx=(fromLeft?1:-1)*(2.0+Math.random()*2.3);targets.push(g)}
+let spawnsSincePig=0;
+function spawn(){
+ // Le cochon reste aléatoire, mais apparaît régulièrement : au moins un toutes les 4 apparitions.
+ const pig=(spawnsSincePig>=3)||Math.random()<.32;
+ if(pig)spawnsSincePig=0;else spawnsSincePig++;
+ const g=makePerson(pig),fromLeft=Math.random()<.5;
+ g.position.set(fromLeft?-12:12,0,-5-Math.random()*4);
+ g.scale.setScalar(pig?.70+Math.random()*.08:.62+Math.random()*.16);
+ g.userData.vx=(fromLeft?1:-1)*(1.65+Math.random()*1.9);
+ targets.push(g)
+}
 function removeTarget(g){scene.remove(g);const i=targets.indexOf(g);if(i>=0)targets.splice(i,1)}
 function start(){document.getElementById('start').classList.add('hidden');document.getElementById('end').classList.add('hidden');document.getElementById('pauseScreen').classList.add('hidden');score=0;elapsed=0;running=true;paused=false;last=performance.now();spawnAt=0;targets.slice().forEach(removeTarget);document.getElementById('score').textContent='SCORE  0';document.getElementById('timer').textContent='TEMPS  60';mount.style.filter='blur(0px)';showToast('À TOI DE JOUER !')}
 function getScores(){try{return JSON.parse(localStorage.getItem('boudinRanchScores')||'[]')}catch(e){return []}}
