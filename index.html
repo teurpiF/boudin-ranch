@@ -230,7 +230,7 @@ function tableSet(x,z,w=4.2){
 tableSet(-5,-.3,3.7);tableSet(1.3,-.9,4.0);tableSet(6,-.1,3.4);
 // Homme suspendu à la charpente, comme sur la photo du ranch : pose comique, sans bloquer les cibles.
 function hangingMan(){
- const g=new THREE.Group();g.position.set(4.0,8.75,-5.9);g.scale.set(1.08,1.08,1.08);scene.add(g);
+ const g=new THREE.Group();g.position.set(3.35,8.75,-4.65);g.scale.set(1.12,1.12,1.12);scene.add(g);
  const yellow=mat(0xd5b52d),jeans=mat(0x24364d),hair=mat(0x211a16),face=mat(0xc99069),shirtDark=mat(0x332a22),skinLight=mat(0xd9a078);
  // Mains visibles autour de la poutre, doigts agrippés au bois.
  for(const x of [-.48,.48]){
@@ -264,12 +264,12 @@ function hangingMan(){
 hangingMan();
 // Panneau unique suspendu devant la charpente : aucun doublon sur le mur arrière.
 const signBoard=mat(0x24150d),signEdge=mat(0xc58b4d),signFace=mat(0x321d11);
-box(scene,0,7.15,-5.55,7.4,1.22,.24,signEdge);
-box(scene,0,7.15,-5.39,7.16,1.00,.12,signBoard);
+box(scene,0,7.15,-3.65,7.4,1.22,.24,signEdge);
+box(scene,0,7.15,-3.49,7.16,1.00,.12,signBoard);
 // Petites attaches qui relient visuellement le panneau aux poutres.
 for(const x of [-3.1,3.1]){
-  cyl(scene,x,7.82,-5.55,.045,.045,.42,metal,6);
-  cyl(scene,x,7.72,-5.53,.085,.085,.09,signEdge,8);
+  cyl(scene,x,7.82,-3.65,.045,.045,.42,metal,6);
+  cyl(scene,x,7.72,-3.63,.085,.085,.09,signEdge,8);
 }
 const signCanvas=document.createElement('canvas');signCanvas.width=1400;signCanvas.height=240;
 const ctx=signCanvas.getContext('2d');ctx.fillStyle='#28170e';ctx.fillRect(0,0,1400,240);
@@ -279,7 +279,7 @@ ctx.strokeStyle='#100904';ctx.lineWidth=15;ctx.strokeText('BOUDIN RANCH',700,123
 ctx.fillStyle='#fff0cb';ctx.fillText('BOUDIN RANCH',700,123);
 const signTex=new THREE.CanvasTexture(signCanvas);signTex.colorSpace=THREE.SRGBColorSpace;signTex.anisotropy=4;
 const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(6.96,.88),new THREE.MeshBasicMaterial({map:signTex}));
-signMesh.position.set(0,7.15,-5.31);scene.add(signMesh);
+signMesh.position.set(0,7.15,-3.41);scene.add(signMesh);
 const targets=[];
 function makePerson(isPig=false){
  const g=new THREE.Group();scene.add(g);const cloth=isPig?pink:[red,blue,mat(0x5c6550),mat(0x8d623d)][Math.floor(Math.random()*4)];
@@ -301,7 +301,7 @@ function makePerson(isPig=false){
 }
 let score=0,elapsed=0,running=false,paused=false,last=0,spawnAt=0,gesture=null,toastTimer=0;
 function showToast(text){const el=document.getElementById('toast');el.textContent=text;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.textContent='',900)}
-function spawn(){const pig=Math.random()<.17,g=makePerson(pig),fromLeft=Math.random()<.5;g.position.set(fromLeft?-12:12,0,-5-Math.random()*4);g.scale.setScalar(.62+Math.random()*.16);g.userData.vx=(fromLeft?1:-1)*(2.0+Math.random()*2.3);targets.push(g)}
+function spawn(){const pig=Math.random()<.23,g=makePerson(pig),fromLeft=Math.random()<.5;g.position.set(fromLeft?-12:12,0,-5-Math.random()*4);g.scale.setScalar(.62+Math.random()*.16);g.userData.vx=(fromLeft?1:-1)*(2.0+Math.random()*2.3);targets.push(g)}
 function removeTarget(g){scene.remove(g);const i=targets.indexOf(g);if(i>=0)targets.splice(i,1)}
 function start(){document.getElementById('start').classList.add('hidden');document.getElementById('end').classList.add('hidden');document.getElementById('pauseScreen').classList.add('hidden');score=0;elapsed=0;running=true;paused=false;last=performance.now();spawnAt=0;targets.slice().forEach(removeTarget);document.getElementById('score').textContent='SCORE  0';document.getElementById('timer').textContent='TEMPS  60';mount.style.filter='blur(0px)';showToast('À TOI DE JOUER !')}
 function getScores(){try{return JSON.parse(localStorage.getItem('boudinRanchScores')||'[]')}catch(e){return []}}
