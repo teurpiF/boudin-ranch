@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Boudin Ranch</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#21160f;color:#fff;font-family:system-ui;overflow:hidden;touch-action:manipulation}
+#game{position:relative;width:100vw;height:100dvh;overflow:hidden;background:linear-gradient(#513b2b 0%,#79573b 45%,#38251a 46%,#24170f 100%)}
+.beam{position:absolute;top:0;width:13px;height:55%;background:#38251d;box-shadow:3px 0 #68442b}
+.beam:nth-child(1){left:8%}.beam:nth-child(2){left:32%}.beam:nth-child(3){left:65%}.beam:nth-child(4){right:8%}
+#sign{position:absolute;top:7%;left:50%;transform:translateX(-50%);background:#4a2b19;border:5px solid #b88a53;padding:8px 18px;font-weight:1000;font-size:clamp(20px,5vw,30px);white-space:nowrap;box-shadow:0 5px #25170e}
+#score{position:absolute;top:2%;left:3%;background:#17110ddd;padding:8px 12px;border-radius:12px;font-weight:bold;z-index:5}
+#hint{position:absolute;top:19%;width:100%;text-align:center;color:#ffe0a8;font-size:13px}
+#floor{position:absolute;bottom:0;height:37%;width:100%;background:repeating-linear-gradient(0deg,#57351f 0 25px,#694329 26px 29px)}
+#table{position:absolute;bottom:18%;height:12%;width:100%;background:linear-gradient(#b7834f 0 20%,#744524 22%);border-top:6px solid #d4a16a;box-shadow:0 -5px 12px #20140d}
+#player{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);font-size:clamp(65px,17vw,100px);z-index:3}
+#crossings{position:absolute;inset:0;overflow:hidden}
+.person{position:absolute;top:42%;font-size:clamp(42px,11vw,65px);white-space:nowrap;filter:drop-shadow(2px 5px 2px #24170e);will-change:transform}
+.person span{display:block;text-align:center;font-size:11px;color:#fff;background:#24170ecc;border-radius:8px;padding:2px}
+#sausage{position:absolute;display:none;font-size:34px;z-index:8;pointer-events:none}
+#message{position:absolute;top:31%;width:100%;text-align:center;font-size:28px;font-weight:1000;color:#ffe07b;text-shadow:2px 3px #321b0c;z-index:9;pointer-events:none}
+#start{position:absolute;inset:0;z-index:20;background:#21160fee;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px}
+.card{max-width:360px;background:#593a27;border:4px solid #c39258;border-radius:20px;padding:25px;box-shadow:0 10px #120b07}
+.card h1{font-size:36px;line-height:1;margin:0 0 15px}
+button{border:0;border-radius:12px;background:#e8a94f;color:#321b0c;font-weight:1000;font-size:20px;padding:13px 22px;margin-top:12px}
+#restart{position:absolute;bottom:2%;right:3%;z-index:10;font-size:13px;padding:8px}
+</style>
+</head>
+<body>
+<div id="game">
+  <div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div>
+  <div id="sign">🐷 BOUDIN RANCH 🐷</div>
+  <div id="score">🏆 Score : <b id="points">0</b></div>
+  <div id="hint">FAIS GLISSER TON DOIGT POUR LANCER !</div>
+  <div id="crossings"></div>
+  <div id="floor"></div><div id="table"></div>
+  <div id="player">🤠</div>
+  <div id="sausage">🌭</div><div id="message"></div>
+  <button id="restart" onclick="resetGame()">↻ Rejouer</button>
+  <div id="start"><div class="card">
+    <h1>🐷 BOUDIN<br>RANCH</h1>
+    <p>Bienvenue au ranch !</p>
+    <p>🎯 Lance tes boudins sur les passants.</p>
+    <p>🚶 Passant touché : <b>+10 points</b></p>
+    <p>🐷 Cochon touché : <b>+50 points</b></p>
+    <button onclick="startGame()">ENTRER DANS LE RANCH</button>
+  </div></div>
+</div>
+<script>
+const area=document.getElementById('crossings');
+const points=document.getElementById('points');
+const sausage=document.getElementById('sausage');
+const message=document.getElementById('message');
+let score=0,playing=false,people=[],lastSpawn=0,lastTime=0,throwing=false;
+function startGame(){
+ document.getElementById('start').style.display='none';
+ playing=true;lastTime=performance.now();requestAnimationFrame(loop);
+}
+function resetGame(){
+ score=0;points.textContent=0;people.forEach(p=>p.el.remove());people=[];
+ message.textContent='';if(!playing){startGame();return}
+}
+function spawn(){
+ const pig=Math.random()<.16;
+ const fromLeft=Math.random()<.5;
+ const el=document.createElement('div');el.className='person';
+ el.innerHTML=(pig?'🐷':'🧍')+'<span>'+(pig?'LE COCHON !':'PASSANT')+'</span>';
+ area.appendChild(el);
+ const y=35+Math.random()*20;
+ el.style.top=y+'%';
+ people.push({el,x:fromLeft?-90:innerWidth+30,y,speed:(1.5+Math.random()*2.3)*(fromLeft?1:-1),pig,hit:false});
+}
+function loop(t){
+ if(!playing)return;
+ const dt=Math.min((t-lastTime)/16,2);lastTime=t;
+ if(t-lastSpawn>900+Math.random()*900){spawn();lastSpawn=t}
+ people=people.filter(p=>{
+  p.x+=p.speed*dt;p.el.style.transform=`translateX(${p.x}px)`;
+  if(p.x>innerWidth+120||p.x<-150){p.el.remove();return false}
+  return true;
+ });
+ requestAnimationFrame(loop);
+}
+let startX=0,startY=0;
+document.getElementById('game').addEventListener('pointerdown',e=>{
+ if(!playing||e.target.closest('button'))return;
+ startX=e.clientX;startY=e.clientY;
+});
+document.getElementById('game').addEventListener('pointerup',e=>{
+ if(!playing||e.target.closest('button'))return;
+ const dx=e.clientX-startX,dy=e.clientY-startY;
+ launch(e.clientX,e.clientY,dx,dy);
+});
+function launch(x,y,dx,dy){
+ sausage.style.display='block';sausage.textContent='🌭';
+ sausage.style.left=x-15+'px';sausage.style.top=y-15+'px';
+ const targetX=x+dx*1.5,targetY=y+dy*1.5;
+ sausage.animate([{left:x-15+'px',top:y-15+'px',transform:'rotate(0deg)'},{left:targetX-15+'px',top:targetY-15+'px',transform:'rotate(500deg)'}],{duration:350,easing:'ease-out'});
+ const candidates=people.filter(p=>!p.hit);
+ let best=null,dist=130;
+ for(const p of candidates){
+  const r=p.el.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const d=Math.hypot(cx-targetX,cy-targetY);
+  if(d<dist){dist=d;best=p}
+ }
+ if(best){
+  best.hit=true;best.el.remove();people=people.filter(p=>p!==best);
+  score+=best.pig?50:10;points.textContent=score;
+  message.textContent=best.pig?'🐷 +50 !':'🎯 +10 !';
+  setTimeout(()=>message.textContent='',700);
+ }else{
+  message.textContent='RATÉ !';
+  setTimeout(()=>message.textContent='',500);
+ }
+ setTimeout(()=>sausage.style.display='none',360);
+}
+</script>
+</div>
+</body>
+</html>
