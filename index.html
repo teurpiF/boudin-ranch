@@ -10,7 +10,7 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#21160f;color:#fff;font-family:system-ui,-apple-system,sans-serif;touch-action:none}
 #scene{position:absolute;inset:0;filter:blur(0px);transition:filter 1.4s}
 canvas{display:block;width:100%;height:100%}
-#brand{position:absolute;z-index:2;top:12%;left:50%;transform:translateX(-50%);padding:7px 14px;white-space:nowrap;background:#432617eF;border:3px solid #c28b50;border-radius:5px;font:1000 clamp(17px,4.8vw,29px) Georgia,serif;color:#ffe3ad;text-shadow:2px 3px #211006;box-shadow:0 5px #1b100a;pointer-events:none}
+#brand{display:none;position:absolute;z-index:2;top:12%;left:50%;transform:translateX(-50%);padding:7px 14px;white-space:nowrap;background:#432617eF;border:3px solid #c28b50;border-radius:5px;font:1000 clamp(17px,4.8vw,29px) Georgia,serif;color:#ffe3ad;text-shadow:2px 3px #211006;box-shadow:0 5px #1b100a;pointer-events:none}
 .hud{position:absolute;z-index:4;top:env(safe-area-inset-top,8px);left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:12px;gap:8px;pointer-events:none}
 .panel{background:#2b1a10eF;border:2px solid #bd8950;border-radius:11px;padding:7px 11px;box-shadow:0 3px #160d08;color:#ffe3ad;font-weight:900;text-shadow:1px 2px #281409}
 #score{font-size:16px}#timer{font-size:23px;min-width:72px;text-align:center}
@@ -48,7 +48,7 @@ button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df
 
 /* Version pensée d'abord pour le jeu en portrait sur téléphone */
 @media (max-width:600px) and (orientation:portrait){
- #brand{top:13%;max-width:86vw;white-space:normal;text-align:center;font-size:clamp(17px,5vw,23px)}
+ #brand{display:none;top:13%;max-width:86vw;white-space:normal;text-align:center;font-size:clamp(17px,5vw,23px)}
  #tip{top:20%;font-size:clamp(10px,2.8vw,12px);max-width:100%;padding:0 16px}
  .hud{padding-top:calc(env(safe-area-inset-top, 0px) + 8px)}
  #aim{bottom:13%;}
@@ -116,7 +116,7 @@ carvedColumn(-1.75,-4.5);carvedColumn(1.75,-4.5);
 // Sculptures figuratives inspirées des poteaux monumentaux du ranch.
 // Les deux piliers sont rapprochés du centre pour rester visibles en portrait sur mobile.
 function eagleCarving(x,z){
- const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ const g=new THREE.Group();g.position.set(x,0,z+0.43);g.scale.set(1.16,1.12,1.18);scene.add(g);
  // Aigle monumental taillé dans le même tronc que le pilier : poitrine large,
  // tête tournée de profil, bec crochu et deux ailes déployées en éventail.
  const carved=mat(0xa77b4e),carvedLight=mat(0xc09a6b),carvedShadow=mat(0x765236),grain=mat(0x8d6844);
@@ -144,7 +144,7 @@ function eagleCarving(x,z){
  for(let i=0;i<7;i++)box(g,-.27+i*.09,3.1+i*.17,.49,.025,.22,.018,grain,0,0,.1);
 }
 function humanCarving(x,z){
- const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ const g=new THREE.Group();g.position.set(x,0,z+0.43);g.scale.set(1.13,1.12,1.18);scene.add(g);
  // Figure humaine sculptée dans le pilier, plus proche d'une statue en relief
  // que d'un personnage posé devant le bois.
  const carved=mat(0xb58b5b),carvedLight=mat(0xc8a477),carvedShadow=mat(0x795637),incise=mat(0x62452e);
@@ -230,7 +230,7 @@ function tableSet(x,z,w=4.2){
 tableSet(-5,-.3,3.7);tableSet(1.3,-.9,4.0);tableSet(6,-.1,3.4);
 // Homme suspendu à la charpente, comme sur la photo du ranch : pose comique, sans bloquer les cibles.
 function hangingMan(){
- const g=new THREE.Group();g.position.set(2.8,8.8,-6.7);scene.add(g);
+ const g=new THREE.Group();g.position.set(4.0,8.75,-5.9);g.scale.set(1.08,1.08,1.08);scene.add(g);
  const yellow=mat(0xd5b52d),jeans=mat(0x24364d),hair=mat(0x211a16),face=mat(0xc99069),shirtDark=mat(0x332a22),skinLight=mat(0xd9a078);
  // Mains visibles autour de la poutre, doigts agrippés au bois.
  for(const x of [-.48,.48]){
@@ -262,10 +262,24 @@ function hangingMan(){
  box(g,.23,-1.74,.12,.3,.16,.42,shirtDark,0,0,.08);
 }
 hangingMan();
-// Panneau abaissé, contrasté et lisible derrière la charpente.
-box(scene,0,4.95,-12.5,9.2,1.65,.48,darkWood);box(scene,0,4.95,-12.22,8.85,1.34,.14,mat(0x21130c));
-// Lettrage rendu en haute résolution avec contour clair, sans transparence sur le fond.
-const signCanvas=document.createElement('canvas');signCanvas.width=1200;signCanvas.height=240;const ctx=signCanvas.getContext('2d');ctx.fillStyle='#21130c';ctx.fillRect(0,0,1200,240);ctx.strokeStyle='#d3a064';ctx.lineWidth=12;ctx.strokeRect(18,18,1164,204);ctx.font='900 132px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';ctx.strokeStyle='#100904';ctx.lineWidth=13;ctx.strokeText('BOUDIN RANCH',600,124);ctx.fillStyle='#fff0cb';ctx.fillText('BOUDIN RANCH',600,124);const tex=new THREE.CanvasTexture(signCanvas);tex.anisotropy=4;const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(8.55,1.22),new THREE.MeshBasicMaterial({map:tex,depthWrite:false}));signMesh.position.set(0,4.95,-12.12);scene.add(signMesh);
+// Panneau unique suspendu devant la charpente : aucun doublon sur le mur arrière.
+const signBoard=mat(0x24150d),signEdge=mat(0xc58b4d),signFace=mat(0x321d11);
+box(scene,0,7.05,-6.55,8.7,1.42,.24,signEdge);
+box(scene,0,7.05,-6.39,8.42,1.17,.12,signBoard);
+// Petites attaches qui relient visuellement le panneau aux poutres.
+for(const x of [-3.75,3.75]){
+  cyl(scene,x,7.92,-6.55,.045,.045,.55,metal,6);
+  cyl(scene,x,7.72,-6.53,.085,.085,.09,signEdge,8);
+}
+const signCanvas=document.createElement('canvas');signCanvas.width=1400;signCanvas.height=240;
+const ctx=signCanvas.getContext('2d');ctx.fillStyle='#28170e';ctx.fillRect(0,0,1400,240);
+ctx.strokeStyle='#d7a05b';ctx.lineWidth=13;ctx.strokeRect(18,18,1364,204);
+ctx.font='900 142px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+ctx.strokeStyle='#100904';ctx.lineWidth=15;ctx.strokeText('BOUDIN RANCH',700,123);
+ctx.fillStyle='#fff0cb';ctx.fillText('BOUDIN RANCH',700,123);
+const signTex=new THREE.CanvasTexture(signCanvas);signTex.colorSpace=THREE.SRGBColorSpace;signTex.anisotropy=4;
+const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(8.22,1.05),new THREE.MeshBasicMaterial({map:signTex}));
+signMesh.position.set(0,7.05,-6.31);scene.add(signMesh);
 const targets=[];
 function makePerson(isPig=false){
  const g=new THREE.Group();scene.add(g);const cloth=isPig?pink:[red,blue,mat(0x5c6550),mat(0x8d623d)][Math.floor(Math.random()*4)];
