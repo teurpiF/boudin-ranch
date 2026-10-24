@@ -1,123 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Boudin Ranch</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Boudin Ranch — Low Poly</title>
 <style>
+:root{--gold:#e9b66b;--dark:#25160e}
 *{box-sizing:border-box}
-body{margin:0;background:#21160f;color:#fff;font-family:system-ui;overflow:hidden;touch-action:manipulation}
-#game{position:relative;width:100vw;height:100dvh;overflow:hidden;background:linear-gradient(#513b2b 0%,#79573b 45%,#38251a 46%,#24170f 100%)}
-.beam{position:absolute;top:0;width:13px;height:55%;background:#38251d;box-shadow:3px 0 #68442b}
-.beam:nth-child(1){left:8%}.beam:nth-child(2){left:32%}.beam:nth-child(3){left:65%}.beam:nth-child(4){right:8%}
-#sign{position:absolute;top:7%;left:50%;transform:translateX(-50%);background:#4a2b19;border:5px solid #b88a53;padding:8px 18px;font-weight:1000;font-size:clamp(20px,5vw,30px);white-space:nowrap;box-shadow:0 5px #25170e}
-#score{position:absolute;top:2%;left:3%;background:#17110ddd;padding:8px 12px;border-radius:12px;font-weight:bold;z-index:5}
-#hint{position:absolute;top:19%;width:100%;text-align:center;color:#ffe0a8;font-size:13px}
-#floor{position:absolute;bottom:0;height:37%;width:100%;background:repeating-linear-gradient(0deg,#57351f 0 25px,#694329 26px 29px)}
-#table{position:absolute;bottom:18%;height:12%;width:100%;background:linear-gradient(#b7834f 0 20%,#744524 22%);border-top:6px solid #d4a16a;box-shadow:0 -5px 12px #20140d}
-#player{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);font-size:clamp(65px,17vw,100px);z-index:3}
-#crossings{position:absolute;inset:0;overflow:hidden}
-.person{position:absolute;top:42%;font-size:clamp(42px,11vw,65px);white-space:nowrap;filter:drop-shadow(2px 5px 2px #24170e);will-change:transform}
-.person span{display:block;text-align:center;font-size:11px;color:#fff;background:#24170ecc;border-radius:8px;padding:2px}
-#sausage{position:absolute;display:none;font-size:34px;z-index:8;pointer-events:none}
-#message{position:absolute;top:31%;width:100%;text-align:center;font-size:28px;font-weight:1000;color:#ffe07b;text-shadow:2px 3px #321b0c;z-index:9;pointer-events:none}
-#start{position:absolute;inset:0;z-index:20;background:#21160fee;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px}
-.card{max-width:360px;background:#593a27;border:4px solid #c39258;border-radius:20px;padding:25px;box-shadow:0 10px #120b07}
-.card h1{font-size:36px;line-height:1;margin:0 0 15px}
-button{border:0;border-radius:12px;background:#e8a94f;color:#321b0c;font-weight:1000;font-size:20px;padding:13px 22px;margin-top:12px}
-#restart{position:absolute;bottom:2%;right:3%;z-index:10;font-size:13px;padding:8px}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#21160f;color:#fff;font-family:system-ui,-apple-system,sans-serif;touch-action:none}
+#scene{position:absolute;inset:0;filter:blur(0px);transition:filter 1.4s}
+canvas{display:block;width:100%;height:100%}
+#brand{position:absolute;z-index:2;top:12%;left:50%;transform:translateX(-50%);padding:7px 14px;white-space:nowrap;background:#432617eF;border:3px solid #c28b50;border-radius:5px;font:1000 clamp(17px,4.8vw,29px) Georgia,serif;color:#ffe3ad;text-shadow:2px 3px #211006;box-shadow:0 5px #1b100a;pointer-events:none}
+.hud{position:absolute;z-index:4;top:env(safe-area-inset-top,8px);left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding:12px;gap:8px;pointer-events:none}
+.panel{background:#2b1a10eF;border:2px solid #bd8950;border-radius:11px;padding:7px 11px;box-shadow:0 3px #160d08;color:#ffe3ad;font-weight:900;text-shadow:1px 2px #281409}
+#score{font-size:16px}#timer{font-size:23px;min-width:72px;text-align:center}
+#pause{pointer-events:auto;font-size:20px;border:2px solid #bd8950;color:#ffe3ad;background:#402515;border-radius:10px;padding:6px 11px}
+#tip{position:absolute;z-index:3;top:21%;left:0;right:0;text-align:center;color:#ffe9c1;font-size:clamp(10px,2.8vw,14px);font-weight:900;text-shadow:1px 2px #281409;pointer-events:none;padding:0 8px}
+#aim{position:absolute;z-index:3;bottom:12%;left:50%;transform:translateX(-50%);font-size:clamp(42px,11vw,66px);filter:drop-shadow(0 5px 3px #160d08);pointer-events:none}
+#throwHint{position:absolute;bottom:4%;left:0;right:0;text-align:center;font-size:12px;font-weight:900;color:#ffe6bf;z-index:3;text-shadow:1px 2px #21130b;pointer-events:none}
+#toast{position:absolute;z-index:5;top:34%;left:0;right:0;text-align:center;font-size:clamp(25px,7vw,43px);font-weight:1000;color:#ffe17c;text-shadow:3px 4px #321808;pointer-events:none}
+#footer{position:absolute;bottom:1%;left:0;right:0;text-align:center;font-size:9px;color:#f8dfbd99;z-index:2;pointer-events:none}
+.overlay{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#120b07b8;padding:20px}
+.hidden{display:none!important}
+.card{max-width:380px;width:100%;text-align:center;background:linear-gradient(145deg,#704528,#321d12);border:4px solid #c18b4c;border-radius:22px;padding:24px 20px;box-shadow:0 10px 0 #160d08,inset 0 0 0 2px #e0b47b}
+.card h1{font-family:Georgia,serif;font-size:clamp(34px,10vw,48px);line-height:.95;margin:0 0 14px;color:#ffe0a4;text-shadow:3px 4px #251308}
+.card p{margin:9px 0;color:#fff0d8}
+button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df8e36);color:#321909;font-size:17px;font-weight:1000;padding:13px 16px;margin-top:12px;box-shadow:0 4px #8c4b1c}
+@media (max-height:620px){#brand{top:10%}#tip{top:19%}.card{padding:16px}.card p{margin:5px}}
 </style>
 </head>
 <body>
-<div id="game">
-  <div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div>
-  <div id="sign">🐷 BOUDIN RANCH 🐷</div>
-  <div id="score">🏆 Score : <b id="points">0</b></div>
-  <div id="hint">FAIS GLISSER TON DOIGT POUR LANCER !</div>
-  <div id="crossings"></div>
-  <div id="floor"></div><div id="table"></div>
-  <div id="player">🤠</div>
-  <div id="sausage">🌭</div><div id="message"></div>
-  <button id="restart" onclick="resetGame()">↻ Rejouer</button>
-  <div id="start"><div class="card">
-    <h1>🐷 BOUDIN<br>RANCH</h1>
-    <p>Bienvenue au ranch !</p>
-    <p>🎯 Lance tes boudins sur les passants.</p>
-    <p>🚶 Passant touché : <b>+10 points</b></p>
-    <p>🐷 Cochon touché : <b>+50 points</b></p>
-    <button onclick="startGame()">ENTRER DANS LE RANCH</button>
-  </div></div>
-</div>
+<div id="scene"></div>
+<div id="brand">BOUDIN RANCH</div>
+<div class="hud"><div class="panel" id="score">🏆 0</div><div class="panel" id="timer">⏱ 60</div><button id="pause" aria-label="Pause">Ⅱ</button></div>
+<div id="tip">FAIS GLISSER TON DOIGT VERS UN PASSANT POUR LANCER !</div>
+<div id="aim">🌭</div><div id="throwHint">PASSANT : +10 &nbsp; • &nbsp; COCHON : +50</div><div id="toast"></div>
+<div id="footer">BOUDIN RANCH • JEU DE RÉFLEXES</div>
+<div id="start" class="overlay"><div class="card"><h1>BOUDIN<br>RANCH</h1><p>Bienvenue dans le ranch !</p><p>🎯 Passant touché : <b>+10 points</b></p><p>🐷 Cochon touché : <b>+50 points</b></p><p>🍷 Toutes les 10 secondes, la vision se trouble davantage.</p><p>⏱️ Tu as 60 secondes pour marquer un maximum de points.</p><button class="action" id="play">ENTRER DANS LE RANCH</button></div></div>
+<div id="end" class="overlay hidden"><div class="card"><h1>FIN DE PARTIE !</h1><p id="finalScore"></p><p id="finalMessage">Le ranch se souviendra de toi.</p><button class="action" id="again">REJOUER</button></div></div>
+<div id="pauseScreen" class="overlay hidden"><div class="card"><h1>PAUSE</h1><p>Reprends ton souffle, cowboy.</p><button class="action" id="resume">REPRENDRE</button></div></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
-const area=document.getElementById('crossings');
-const points=document.getElementById('points');
-const sausage=document.getElementById('sausage');
-const message=document.getElementById('message');
-let score=0,playing=false,people=[],lastSpawn=0,lastTime=0,throwing=false;
-function startGame(){
- document.getElementById('start').style.display='none';
- playing=true;lastTime=performance.now();requestAnimationFrame(loop);
-}
-function resetGame(){
- score=0;points.textContent=0;people.forEach(p=>p.el.remove());people=[];
- message.textContent='';if(!playing){startGame();return}
-}
-function spawn(){
- const pig=Math.random()<.16;
- const fromLeft=Math.random()<.5;
- const el=document.createElement('div');el.className='person';
- el.innerHTML=(pig?'🐷':'🧍')+'<span>'+(pig?'LE COCHON !':'PASSANT')+'</span>';
- area.appendChild(el);
- const y=35+Math.random()*20;
- el.style.top=y+'%';
- people.push({el,x:fromLeft?-90:innerWidth+30,y,speed:(1.5+Math.random()*2.3)*(fromLeft?1:-1),pig,hit:false});
-}
-function loop(t){
- if(!playing)return;
- const dt=Math.min((t-lastTime)/16,2);lastTime=t;
- if(t-lastSpawn>900+Math.random()*900){spawn();lastSpawn=t}
- people=people.filter(p=>{
-  p.x+=p.speed*dt;p.el.style.transform=`translateX(${p.x}px)`;
-  if(p.x>innerWidth+120||p.x<-150){p.el.remove();return false}
-  return true;
- });
- requestAnimationFrame(loop);
-}
-let startX=0,startY=0;
-document.getElementById('game').addEventListener('pointerdown',e=>{
- if(!playing||e.target.closest('button'))return;
- startX=e.clientX;startY=e.clientY;
-});
-document.getElementById('game').addEventListener('pointerup',e=>{
- if(!playing||e.target.closest('button'))return;
- const dx=e.clientX-startX,dy=e.clientY-startY;
- launch(e.clientX,e.clientY,dx,dy);
-});
-function launch(x,y,dx,dy){
- sausage.style.display='block';sausage.textContent='🌭';
- sausage.style.left=x-15+'px';sausage.style.top=y-15+'px';
- const targetX=x+dx*1.5,targetY=y+dy*1.5;
- sausage.animate([{left:x-15+'px',top:y-15+'px',transform:'rotate(0deg)'},{left:targetX-15+'px',top:targetY-15+'px',transform:'rotate(500deg)'}],{duration:350,easing:'ease-out'});
- const candidates=people.filter(p=>!p.hit);
- let best=null,dist=130;
- for(const p of candidates){
-  const r=p.el.getBoundingClientRect();
-  const cx=r.left+r.width/2,cy=r.top+r.height/2;
-  const d=Math.hypot(cx-targetX,cy-targetY);
-  if(d<dist){dist=d;best=p}
- }
- if(best){
-  best.hit=true;best.el.remove();people=people.filter(p=>p!==best);
-  score+=best.pig?50:10;points.textContent=score;
-  message.textContent=best.pig?'🐷 +50 !':'🎯 +10 !';
-  setTimeout(()=>message.textContent='',700);
+(()=> {
+const mount=document.getElementById('scene');
+if(!window.THREE){mount.innerHTML='<div style="padding:30px;color:white">Le moteur 3D n’a pas pu charger. Vérifie ta connexion puis recharge la page.</div>';return;}
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x9c7047);scene.fog=new THREE.Fog(0x9c7047,19,48);
+const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,100);camera.position.set(0,3.4,11);camera.lookAt(0,2.7,-4);
+const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;mount.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffd9a1,0x49301d,2.0));
+const sun=new THREE.DirectionalLight(0xffc477,2.4);sun.position.set(-4,9,5);scene.add(sun);
+const mat=(c)=>new THREE.MeshStandardMaterial({color:c,roughness:1,flatShading:true});
+const wood=mat(0x684025),wood2=mat(0x8c5932),lightWood=mat(0xb27a46),darkWood=mat(0x3d2518),floorMat=mat(0x785033),metal=mat(0x4b4036),cream=mat(0xe5c69a),red=mat(0xa83c2b),blue=mat(0x3b6581),skin=mat(0xe6a36d),pants=mat(0x354052),pink=mat(0xf18a9e),pinkLight=mat(0xffb0bd),black=mat(0x251c18),gold=mat(0xe0a44b);
+function box(parent,x,y,z,w,h,d,material,rx=0,ry=0,rz=0){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);parent.add(m);return m}
+function cyl(parent,x,y,z,rt,rb,h,material,seg=7){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),material);m.position.set(x,y,z);parent.add(m);return m}
+function ico(parent,x,y,z,sx,sy,sz,material,detail=1){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(1,detail),material);m.position.set(x,y,z);m.scale.set(sx,sy,sz);parent.add(m);return m}
+// floorboards
+box(scene,0,-.18,-8,32,.35,38,floorMat);
+for(let i=0;i<38;i++)box(scene,0,.015,-25+i*.85,30,.035,.04,wood);
+// walls and upright beams
+box(scene,0,5.3,-16,30,10.6,.4,wood);
+for(let y=1;y<10;y+=1.05)box(scene,0,y,-15.76,30,.11,.12,wood2);
+for(let x=-14;x<=14;x+=4){box(scene,x,5.15,-8,.38,10.1,.48,darkWood);box(scene,x,10.15,-8,.6,.24,30,wood2)}
+// triangular-looking roof trusses, intentionally chunky low-poly beams
+for(let z=-14;z<=6;z+=4){box(scene,0,9.35,z,29,.32,.38,darkWood);box(scene,-4.5,8.25,z,12,.28,.32,wood2,0,0,-.48);box(scene,4.5,8.25,z,12,.28,.32,wood2,0,0,.48)}
+box(scene,0,6.25,-10,24,.18,.22,darkWood);
+for(let x=-11;x<=11;x+=1.5)box(scene,x,5.9,-10,.12,.7,.12,lightWood);
+// windows with blue-green panes
+for(const x of [-10,10]){box(scene,x,3.7,-15.51,3.2,3.4,.12,lightWood);box(scene,x,3.7,-15.4,2.8,3,.1,mat(0x6b8c80));box(scene,x,3.7,-15.3,.16,3.1,.1,wood);box(scene,x,3.7,-15.3,2.9,.15,.1,wood);box(scene,x,3.7,-15.2,.1,3,.1,wood2);box(scene,x,3.7,-15.2,2.8,.1,.1,wood2)}
+function lantern(x,y,z){box(scene,x,y,z,.35,.45,.3,darkWood);ico(scene,x,y-.05,z-.03,.17,.22,.17,gold,1);box(scene,x,y+.28,z,.42,.07,.38,wood2)}
+for(let x=-10;x<=10;x+=5)lantern(x,7.1,-4);
+function barrel(x,z){const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);cyl(g,0,.72,0,.48,.4,1.35,wood2,8);for(const y of [.3,1.1])cyl(g,0,y,0,.47,.47,.09,metal,8);cyl(g,0,1.41,0,.4,.4,.05,darkWood,8)}
+for(const p of [[-8,-5],[-5,-7],[7,-5],[9,-9],[-11,-10]])barrel(...p);
+// stone oven / bread oven in the back corner
+box(scene,10,1.5,-13,3.6,3,.9,cream);box(scene,10,2.5,-12.48,2.2,1.6,.12,darkWood);ico(scene,10,1.6,-12.35,.8,.8,.2,gold,1);ico(scene,9.7,1.5,-12.25,.45,.55,.12,red,1);ico(scene,10.4,1.5,-12.25,.4,.5,.12,gold,1);
+// foreground table, sausages and cup
+box(scene,0,1.2,5,13,.32,2.2,lightWood);
+for(const x of [-5.5,5.5])for(const z of [4.3,5.7])box(scene,x,.55,z,.25,1.3,.25,darkWood);
+for(let i=0;i<7;i++){const s=ico(scene,-2.5+i*.65,1.47,4.6,.48,.16,.18,mat(i%2?0x7e2d1f:0x9e3926),1);s.rotation.z=.15}
+cyl(scene,-4,1.65,4.4,.48,.48,.08,cream,8);cyl(scene,-4,1.95,4.4,.4,.4,.52,mat(0xb47a43),8);cyl(scene,-4,2.22,4.4,.42,.42,.06,cream,8);
+cyl(scene,4.2,1.76,4.4,.23,.2,.48,mat(0xb9c4c4),7);cyl(scene,4.2,2.01,4.4,.2,.2,.035,mat(0x6e241c),7);
+// sign
+box(scene,0,7.8,-12.5,7.2,1.45,.35,darkWood);box(scene,0,7.8,-12.28,6.9,1.18,.12,lightWood);
+const signCanvas=document.createElement('canvas');signCanvas.width=512;signCanvas.height=128;const ctx=signCanvas.getContext('2d');ctx.font='bold 54px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff0cb';ctx.shadowColor='#321808';ctx.shadowBlur=4;ctx.fillText('BOUDIN RANCH',256,66);const tex=new THREE.CanvasTexture(signCanvas);const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(6.1,1.15),new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));signMesh.position.set(0,7.8,-12.16);scene.add(signMesh);
+const targets=[];
+function makePerson(isPig=false){
+ const g=new THREE.Group();scene.add(g);const cloth=isPig?pink:[red,blue,mat(0x5c6550),mat(0x8d623d)][Math.floor(Math.random()*4)];
+ const legs=isPig?pink:pants;
+ box(g,-.18,.62,0,.18,.72,.2,legs,0,0,.08);box(g,.18,.62,0,.18,.72,.2,legs,0,0,-.08);
+ box(g,0,1.38,0,.62,.78,.35,cloth);
+ if(!isPig){
+  ico(g,0,2.03,0,.29,.32,.28,skin,1);cyl(g,0,2.31,0,.39,.36,.16,Math.random()>.5?mat(0x4a3021):mat(0x9b713d),7);
+  box(g,-.42,1.43,0,.16,.68,.17,skin,0,0,-.3);box(g,.42,1.43,0,.16,.68,.17,skin,0,0,.3);
+  box(g,-.15,.17,.04,.22,.16,.34,black);box(g,.15,.17,.04,.22,.16,.34,black);
  }else{
-  message.textContent='RATÉ !';
-  setTimeout(()=>message.textContent='',500);
+  ico(g,0,2.13,0,.43,.43,.39,pink,1);ico(g,-.3,2.5,0,.15,.3,.12,pinkLight,0);ico(g,.3,2.5,0,.15,.3,.12,pinkLight,0);
+  ico(g,0,2.08,.36,.23,.17,.12,pinkLight,1);ico(g,-.08,2.09,.47,.04,.045,.025,black,0);ico(g,.08,2.09,.47,.04,.045,.025,black,0);
+  ico(g,-.14,2.28,.35,.045,.05,.04,black,0);ico(g,.14,2.28,.35,.045,.05,.04,black,0);
+  cyl(g,0,2.53,0,.38,.38,.13,darkWood,7);cyl(g,0,2.63,0,.3,.3,.08,wood2,7);
+  box(g,-.42,1.5,0,.16,.65,.17,pink,0,0,-.3);box(g,.42,1.5,0,.16,.65,.17,pink,0,0,.3);
  }
- setTimeout(()=>sausage.style.display='none',360);
+ g.userData.isPig=isPig;g.userData.phase=Math.random()*6;g.userData.vx=0;return g
 }
+let score=0,elapsed=0,running=false,paused=false,last=0,spawnAt=0,gesture=null,toastTimer=0;
+function showToast(text){const el=document.getElementById('toast');el.textContent=text;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.textContent='',900)}
+function spawn(){const pig=Math.random()<.17,g=makePerson(pig),fromLeft=Math.random()<.5;g.position.set(fromLeft?-12:12,0,-5-Math.random()*4);g.scale.setScalar(.72+Math.random()*.18);g.userData.vx=(fromLeft?1:-1)*(1.45+Math.random()*1.8);targets.push(g)}
+function removeTarget(g){scene.remove(g);const i=targets.indexOf(g);if(i>=0)targets.splice(i,1)}
+function start(){document.getElementById('start').classList.add('hidden');document.getElementById('end').classList.add('hidden');document.getElementById('pauseScreen').classList.add('hidden');score=0;elapsed=0;running=true;paused=false;last=performance.now();spawnAt=0;targets.slice().forEach(removeTarget);document.getElementById('score').textContent='🏆 0';document.getElementById('timer').textContent='⏱ 60';mount.style.filter='blur(0px)';showToast('À TOI DE JOUER !')}
+function finish(){running=false;document.getElementById('finalScore').textContent='Score final : '+score+' points';document.getElementById('finalMessage').textContent=score>=300?'Légende du ranch ! 🤠':score>=100?'Pas mal, cowboy ! 🐷':'Le boudin a raté sa cible…';document.getElementById('end').classList.remove('hidden')}
+function launch(x,y,dx,dy){
+ if(!running||paused)return;
+ const targetX=x+dx*1.25,targetY=y+dy*1.25,candidates=targets.slice();let best=null,bestD=115;
+ for(const g of candidates){const p=g.position.clone();p.y+=1.2;p.project(camera);const sx=(p.x*.5+.5)*innerWidth,sy=(-p.y*.5+.5)*innerHeight,d=Math.hypot(sx-targetX,sy-targetY);if(d<bestD){bestD=d;best=g}}
+ const shot=document.createElement('div');shot.textContent='🌭';shot.style.cssText=`position:absolute;z-index:8;left:${x-15}px;top:${y-15}px;font-size:30px;pointer-events:none;transition:transform .32s ease-out,opacity .32s`;document.body.appendChild(shot);requestAnimationFrame(()=>{shot.style.transform=`translate(${dx*1.25}px,${dy*1.25}px) rotate(480deg)`;shot.style.opacity='0'});setTimeout(()=>shot.remove(),360);
+ if(best){score+=best.userData.isPig?50:10;document.getElementById('score').textContent='🏆 '+score;showToast(best.userData.isPig?'🐷 COCHON TOUCHÉ ! +50':'TOUCHÉ ! +10');removeTarget(best)}else showToast('RATÉ !')
+}
+renderer.domElement.addEventListener('pointerdown',e=>{gesture={x:e.clientX,y:e.clientY};});
+renderer.domElement.addEventListener('pointerup',e=>{if(!gesture)return;launch(gesture.x,gesture.y,e.clientX-gesture.x,e.clientY-gesture.y);gesture=null;});
+document.getElementById('play').onclick=start;document.getElementById('again').onclick=start;
+document.getElementById('pause').onclick=()=>{if(!running)return;paused=true;document.getElementById('pauseScreen').classList.remove('hidden')};
+document.getElementById('resume').onclick=()=>{paused=false;last=performance.now();document.getElementById('pauseScreen').classList.add('hidden')};
+function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}addEventListener('resize',resize);
+function animate(t){requestAnimationFrame(animate);const dt=Math.min((t-last)/1000,.05);if(!paused)last=t;
+ if(running&&!paused){
+  elapsed+=dt;const left=Math.max(0,60-elapsed);document.getElementById('timer').textContent='⏱ '+Math.ceil(left);
+  const stage=Math.min(5,Math.floor(elapsed/10));mount.style.filter=stage===0?'blur(0px)':'blur('+(stage*.7)+'px)';
+  if(elapsed>=10&&Math.floor(elapsed/10)>Math.floor((elapsed-dt)/10)){showToast(['','🍷 Vision un peu trouble…','🍷 Ça tourne…','🍷 Difficile de viser !','🍷 Le ranch tangue…','🍷 Dernières secondes !'][stage]||'🍷 Vision trouble');}
+  if(t-spawnAt>900+Math.random()*450){spawn();spawnAt=t}
+  for(const g of targets.slice()){g.position.x+=g.userData.vx*dt;g.position.y=Math.abs(Math.sin(t*.006+g.userData.phase))*.06;g.rotation.y=g.userData.vx>0?0:Math.PI;if(Math.abs(g.position.x)>15)removeTarget(g)}
+  if(left<=0)finish()
+ }
+ renderer.render(scene,camera)
+}
+last=performance.now();requestAnimationFrame(animate);
+})();
 </script>
-</div>
 </body>
 </html>
