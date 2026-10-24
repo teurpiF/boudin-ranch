@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Boudin Ranch — Low Poly</title>
+<title>Boudin Ranch — Arcade Low Poly</title>
 <style>
 :root{--gold:#e9b66b;--dark:#25160e}
 *{box-sizing:border-box}
@@ -16,7 +16,7 @@ canvas{display:block;width:100%;height:100%}
 #score{font-size:16px}#timer{font-size:23px;min-width:72px;text-align:center}
 #pause{pointer-events:auto;font-size:20px;border:2px solid #bd8950;color:#ffe3ad;background:#402515;border-radius:10px;padding:6px 11px}
 #tip{position:absolute;z-index:3;top:21%;left:0;right:0;text-align:center;color:#ffe9c1;font-size:clamp(10px,2.8vw,14px);font-weight:900;text-shadow:1px 2px #281409;pointer-events:none;padding:0 8px}
-#aim{position:absolute;z-index:3;bottom:12%;left:50%;transform:translateX(-50%);font-size:clamp(42px,11vw,66px);filter:drop-shadow(0 5px 3px #160d08);pointer-events:none}
+#aim{position:absolute;z-index:3;bottom:12%;left:50%;transform:translateX(-50%);width:58px;height:22px;border-radius:12px;background:linear-gradient(90deg,#6e2118,#b9472b,#7b251a);border:3px solid #e6a06b;box-shadow:0 5px 3px #160d08;pointer-events:none}#aim:before,#aim:after{content:"";position:absolute;top:3px;width:7px;height:10px;background:#e6a06b;border-radius:50%}#aim:before{left:-5px}#aim:after{right:-5px}
 #throwHint{position:absolute;bottom:4%;left:0;right:0;text-align:center;font-size:12px;font-weight:900;color:#ffe6bf;z-index:3;text-shadow:1px 2px #21130b;pointer-events:none}
 #toast{position:absolute;z-index:5;top:34%;left:0;right:0;text-align:center;font-size:clamp(25px,7vw,43px);font-weight:1000;color:#ffe17c;text-shadow:3px 4px #321808;pointer-events:none}
 #footer{position:absolute;bottom:1%;left:0;right:0;text-align:center;font-size:9px;color:#f8dfbd99;z-index:2;pointer-events:none}
@@ -25,6 +25,8 @@ canvas{display:block;width:100%;height:100%}
 .card{max-width:380px;width:100%;text-align:center;background:linear-gradient(145deg,#704528,#321d12);border:4px solid #c18b4c;border-radius:22px;padding:24px 20px;box-shadow:0 10px 0 #160d08,inset 0 0 0 2px #e0b47b}
 .card h1{font-family:Georgia,serif;font-size:clamp(34px,10vw,48px);line-height:.95;margin:0 0 14px;color:#ffe0a4;text-shadow:3px 4px #251308}
 .card p{margin:9px 0;color:#fff0d8}
+#initials{width:112px;text-align:center;text-transform:uppercase;font:1000 26px monospace;letter-spacing:8px;padding:9px 6px;border:3px solid #c18b4c;border-radius:9px;background:#1c1009;color:#ffe3ad;margin:8px auto 2px;display:block}
+#leaderboard{margin:12px auto 0;max-width:280px;text-align:left;font-size:13px;color:#ffe9c9}#leaderboard div{display:flex;justify-content:space-between;border-bottom:1px solid #c18b4c66;padding:3px 6px}#leaderboard .rank{color:#ffd27b;min-width:25px}
 button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df8e36);color:#321909;font-size:17px;font-weight:1000;padding:13px 16px;margin-top:12px;box-shadow:0 4px #8c4b1c}
 @media (max-height:620px){#brand{top:10%}#tip{top:19%}.card{padding:16px}.card p{margin:5px}}
 </style>
@@ -32,23 +34,23 @@ button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df
 <body>
 <div id="scene"></div>
 <div id="brand">BOUDIN RANCH</div>
-<div class="hud"><div class="panel" id="score">🏆 0</div><div class="panel" id="timer">⏱ 60</div><button id="pause" aria-label="Pause">Ⅱ</button></div>
-<div id="tip">FAIS GLISSER TON DOIGT VERS UN PASSANT POUR LANCER !</div>
-<div id="aim">🌭</div><div id="throwHint">PASSANT : +10 &nbsp; • &nbsp; COCHON : +50</div><div id="toast"></div>
+<div class="hud"><div class="panel" id="score">SCORE&nbsp; 0</div><div class="panel" id="timer">TEMPS&nbsp; 60</div><button id="pause" aria-label="Pause">Ⅱ</button></div>
+<div id="tip">VISE PRÉCISÉMENT LE PASSANT ET FAIS UN PETIT GESTE RAPIDE !</div>
+<div id="aim" aria-hidden="true"></div><div id="throwHint">PASSANT : +10 &nbsp; • &nbsp; COCHON : +50</div><div id="toast"></div>
 <div id="footer">BOUDIN RANCH • JEU DE RÉFLEXES</div>
-<div id="start" class="overlay"><div class="card"><h1>BOUDIN<br>RANCH</h1><p>Bienvenue dans le ranch !</p><p>🎯 Passant touché : <b>+10 points</b></p><p>🐷 Cochon touché : <b>+50 points</b></p><p>🍷 Toutes les 10 secondes, la vision se trouble davantage.</p><p>⏱️ Tu as 60 secondes pour marquer un maximum de points.</p><button class="action" id="play">ENTRER DANS LE RANCH</button></div></div>
-<div id="end" class="overlay hidden"><div class="card"><h1>FIN DE PARTIE !</h1><p id="finalScore"></p><p id="finalMessage">Le ranch se souviendra de toi.</p><button class="action" id="again">REJOUER</button></div></div>
+<div id="start" class="overlay"><div class="card"><h1>BOUDIN<br>RANCH</h1><p>Bienvenue dans le ranch !</p><p>Passant touché : <b>+10 points</b></p><p>Personnage en costume de cochon touché : <b>+50 points</b></p><p>Toutes les 10 secondes, la vision se trouble davantage.</p><p>Les cibles sont petites : les lancers doivent être précis.</p><p>Tu as 60 secondes pour marquer un maximum de points.</p><button class="action" id="play">ENTRER DANS LE RANCH</button></div></div>
+<div id="end" class="overlay hidden"><div class="card"><h1>FIN DE PARTIE !</h1><p id="finalScore"></p><p id="finalMessage">Le ranch se souviendra de toi.</p><div id="saveArea"><p>Entre tes 3 initiales pour le classement :</p><input id="initials" maxlength="3" minlength="3" value="AAA" aria-label="Trois initiales"><button class="action" id="saveScore">ENREGISTRER LE SCORE</button></div><div id="leaderboard"></div><button class="action" id="again">REJOUER</button></div></div>
 <div id="pauseScreen" class="overlay hidden"><div class="card"><h1>PAUSE</h1><p>Reprends ton souffle, cowboy.</p><button class="action" id="resume">REPRENDRE</button></div></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 (()=> {
 const mount=document.getElementById('scene');
 if(!window.THREE){mount.innerHTML='<div style="padding:30px;color:white">Le moteur 3D n’a pas pu charger. Vérifie ta connexion puis recharge la page.</div>';return;}
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x9c7047);scene.fog=new THREE.Fog(0x9c7047,19,48);
-const camera=new THREE.PerspectiveCamera(57,innerWidth/innerHeight,.1,100);camera.position.set(0,3.4,11);camera.lookAt(0,2.7,-4);
-const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;mount.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xffd9a1,0x49301d,2.0));
-const sun=new THREE.DirectionalLight(0xffc477,2.4);sun.position.set(-4,9,5);scene.add(sun);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x87603d);scene.fog=new THREE.Fog(0x87603d,17,42);
+const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,100);camera.position.set(0,3.25,10.7);camera.lookAt(0,2.55,-4.5);
+const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.4));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;mount.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xffd9a1,0x352014,1.65));
+const sun=new THREE.DirectionalLight(0xffc477,2.9);sun.position.set(-4,9,5);scene.add(sun);
 const mat=(c)=>new THREE.MeshStandardMaterial({color:c,roughness:1,flatShading:true});
 const wood=mat(0x684025),wood2=mat(0x8c5932),lightWood=mat(0xb27a46),darkWood=mat(0x3d2518),floorMat=mat(0x785033),metal=mat(0x4b4036),cream=mat(0xe5c69a),red=mat(0xa83c2b),blue=mat(0x3b6581),skin=mat(0xe6a36d),pants=mat(0x354052),pink=mat(0xf18a9e),pinkLight=mat(0xffb0bd),black=mat(0x251c18),gold=mat(0xe0a44b);
 function box(parent,x,y,z,w,h,d,material,rx=0,ry=0,rz=0){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);parent.add(m);return m}
@@ -61,6 +63,28 @@ for(let i=0;i<38;i++)box(scene,0,.015,-25+i*.85,30,.035,.04,wood);
 box(scene,0,5.3,-16,30,10.6,.4,wood);
 for(let y=1;y<10;y+=1.05)box(scene,0,y,-15.76,30,.11,.12,wood2);
 for(let x=-14;x<=14;x+=4){box(scene,x,5.15,-8,.38,10.1,.48,darkWood);box(scene,x,10.15,-8,.6,.24,30,wood2)}
+// Colonnes en bois sculpté : socle, fût facetté, chapiteau et motifs géométriques gravés.
+function carvedColumn(x,z){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ cyl(g,0,.22,0,.66,.72,.42,darkWood,8);cyl(g,0,.48,0,.52,.56,.16,lightWood,8);
+ cyl(g,0,3.65,0,.5,.58,6.25,wood2,8);
+ for(const y of [.72,1.0,3.15,3.42,6.62,6.9])cyl(g,0,y,0,.59,.59,.14,lightWood,8);
+ cyl(g,0,7.18,0,.78,.65,.42,darkWood,8);cyl(g,0,7.43,0,.9,.8,.16,lightWood,8);
+ // reliefs en losanges sur les faces visibles de la colonne
+ for(let y=1.25;y<3.05;y+=.58){
+  for(const a of [Math.PI/8,Math.PI*5/8,Math.PI*9/8,Math.PI*13/8]){
+   const r=.53, motif=ico(g,Math.cos(a)*r,y,Math.sin(a)*r,.13,.19,.08,gold,0);motif.rotation.z=Math.PI/4;
+  }
+ }
+ for(let y=3.8;y<6.45;y+=.68){
+  for(const a of [Math.PI/8,Math.PI*5/8,Math.PI*9/8,Math.PI*13/8]){
+   const r=.53;const motif=ico(g,Math.cos(a)*r,y,Math.sin(a)*r,.12,.18,.075,wood,0);motif.rotation.z=Math.PI/4;
+  }
+ }
+ // petites moulures polygonales au pied et sous le chapiteau
+ for(let i=0;i<8;i++){const a=i*Math.PI/4;ico(g,Math.cos(a)*.68,.28,Math.sin(a)*.68,.12,.12,.12,wood2,0)}
+}
+carvedColumn(-9,-4.5);carvedColumn(9,-4.5);
 // triangular-looking roof trusses, intentionally chunky low-poly beams
 for(let z=-14;z<=6;z+=4){box(scene,0,9.35,z,29,.32,.38,darkWood);box(scene,-4.5,8.25,z,12,.28,.32,wood2,0,0,-.48);box(scene,4.5,8.25,z,12,.28,.32,wood2,0,0,.48)}
 box(scene,0,6.25,-10,24,.18,.22,darkWood);
@@ -89,12 +113,12 @@ function makePerson(isPig=false){
  box(g,-.18,.62,0,.18,.72,.2,legs,0,0,.08);box(g,.18,.62,0,.18,.72,.2,legs,0,0,-.08);
  box(g,0,1.38,0,.62,.78,.35,cloth);
  if(!isPig){
-  ico(g,0,2.03,0,.29,.32,.28,skin,1);cyl(g,0,2.31,0,.39,.36,.16,Math.random()>.5?mat(0x4a3021):mat(0x9b713d),7);
+  ico(g,0,2.03,0,.29,.32,.28,skin,0);cyl(g,0,2.31,0,.39,.36,.16,Math.random()>.5?mat(0x4a3021):mat(0x9b713d),7);
   box(g,-.42,1.43,0,.16,.68,.17,skin,0,0,-.3);box(g,.42,1.43,0,.16,.68,.17,skin,0,0,.3);
   box(g,-.15,.17,.04,.22,.16,.34,black);box(g,.15,.17,.04,.22,.16,.34,black);
  }else{
-  ico(g,0,2.13,0,.43,.43,.39,pink,1);ico(g,-.3,2.5,0,.15,.3,.12,pinkLight,0);ico(g,.3,2.5,0,.15,.3,.12,pinkLight,0);
-  ico(g,0,2.08,.36,.23,.17,.12,pinkLight,1);ico(g,-.08,2.09,.47,.04,.045,.025,black,0);ico(g,.08,2.09,.47,.04,.045,.025,black,0);
+  ico(g,0,2.13,0,.43,.43,.39,pink,0);ico(g,-.3,2.5,0,.15,.3,.12,pinkLight,0);ico(g,.3,2.5,0,.15,.3,.12,pinkLight,0);
+  ico(g,0,2.08,.36,.23,.17,.12,pinkLight,0);ico(g,-.08,2.09,.47,.04,.045,.025,black,0);ico(g,.08,2.09,.47,.04,.045,.025,black,0);
   ico(g,-.14,2.28,.35,.045,.05,.04,black,0);ico(g,.14,2.28,.35,.045,.05,.04,black,0);
   cyl(g,0,2.53,0,.38,.38,.13,darkWood,7);cyl(g,0,2.63,0,.3,.3,.08,wood2,7);
   box(g,-.42,1.5,0,.16,.65,.17,pink,0,0,-.3);box(g,.42,1.5,0,.16,.65,.17,pink,0,0,.3);
@@ -103,16 +127,20 @@ function makePerson(isPig=false){
 }
 let score=0,elapsed=0,running=false,paused=false,last=0,spawnAt=0,gesture=null,toastTimer=0;
 function showToast(text){const el=document.getElementById('toast');el.textContent=text;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.textContent='',900)}
-function spawn(){const pig=Math.random()<.17,g=makePerson(pig),fromLeft=Math.random()<.5;g.position.set(fromLeft?-12:12,0,-5-Math.random()*4);g.scale.setScalar(.72+Math.random()*.18);g.userData.vx=(fromLeft?1:-1)*(1.45+Math.random()*1.8);targets.push(g)}
+function spawn(){const pig=Math.random()<.17,g=makePerson(pig),fromLeft=Math.random()<.5;g.position.set(fromLeft?-12:12,0,-5-Math.random()*4);g.scale.setScalar(.62+Math.random()*.16);g.userData.vx=(fromLeft?1:-1)*(2.0+Math.random()*2.3);targets.push(g)}
 function removeTarget(g){scene.remove(g);const i=targets.indexOf(g);if(i>=0)targets.splice(i,1)}
-function start(){document.getElementById('start').classList.add('hidden');document.getElementById('end').classList.add('hidden');document.getElementById('pauseScreen').classList.add('hidden');score=0;elapsed=0;running=true;paused=false;last=performance.now();spawnAt=0;targets.slice().forEach(removeTarget);document.getElementById('score').textContent='🏆 0';document.getElementById('timer').textContent='⏱ 60';mount.style.filter='blur(0px)';showToast('À TOI DE JOUER !')}
-function finish(){running=false;document.getElementById('finalScore').textContent='Score final : '+score+' points';document.getElementById('finalMessage').textContent=score>=300?'Légende du ranch ! 🤠':score>=100?'Pas mal, cowboy ! 🐷':'Le boudin a raté sa cible…';document.getElementById('end').classList.remove('hidden')}
+function start(){document.getElementById('start').classList.add('hidden');document.getElementById('end').classList.add('hidden');document.getElementById('pauseScreen').classList.add('hidden');score=0;elapsed=0;running=true;paused=false;last=performance.now();spawnAt=0;targets.slice().forEach(removeTarget);document.getElementById('score').textContent='SCORE  0';document.getElementById('timer').textContent='TEMPS  60';mount.style.filter='blur(0px)';showToast('À TOI DE JOUER !')}
+function getScores(){try{return JSON.parse(localStorage.getItem('boudinRanchScores')||'[]')}catch(e){return []}}
+function renderScores(){const rows=getScores().sort((a,b)=>b.score-a.score).slice(0,10);document.getElementById('leaderboard').innerHTML='<b>MEILLEURS SCORES</b>'+ (rows.length?rows.map((r,i)=>`<div><span><span class=\"rank\">${i+1}.</span> ${String(r.name||'AAA').slice(0,3)}</span><b>${r.score}</b></div>`).join(''):'<p>Pas encore de score enregistré.</p>')}
+function finish(){running=false;document.getElementById('finalScore').textContent='Score final : '+score+' points';document.getElementById('finalMessage').textContent=score>=300?'LÉGENDE DU RANCH !':score>=100?'BELLE PERFORMANCE !':'LA CIBLE A ÉTÉ MANQUÉE.';document.getElementById('saveArea').style.display='block';document.getElementById('initials').value='AAA';document.getElementById('end').classList.remove('hidden');renderScores()}
+document.getElementById('saveScore').onclick=()=>{const name=(document.getElementById('initials').value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3)||'AAA').padEnd(3,'A');const rows=getScores();rows.push({name,score,date:Date.now()});rows.sort((a,b)=>b.score-a.score);try{localStorage.setItem('boudinRanchScores',JSON.stringify(rows.slice(0,10)));}catch(e){}document.getElementById('saveArea').style.display='none';renderScores();showToast('SCORE ENREGISTRÉ !')};
+document.getElementById('initials').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3)});
 function launch(x,y,dx,dy){
  if(!running||paused)return;
- const targetX=x+dx*1.25,targetY=y+dy*1.25,candidates=targets.slice();let best=null,bestD=115;
+ const targetX=x+dx*1.25,targetY=y+dy*1.25,candidates=targets.slice();let best=null,bestD=38;
  for(const g of candidates){const p=g.position.clone();p.y+=1.2;p.project(camera);const sx=(p.x*.5+.5)*innerWidth,sy=(-p.y*.5+.5)*innerHeight,d=Math.hypot(sx-targetX,sy-targetY);if(d<bestD){bestD=d;best=g}}
- const shot=document.createElement('div');shot.textContent='🌭';shot.style.cssText=`position:absolute;z-index:8;left:${x-15}px;top:${y-15}px;font-size:30px;pointer-events:none;transition:transform .32s ease-out,opacity .32s`;document.body.appendChild(shot);requestAnimationFrame(()=>{shot.style.transform=`translate(${dx*1.25}px,${dy*1.25}px) rotate(480deg)`;shot.style.opacity='0'});setTimeout(()=>shot.remove(),360);
- if(best){score+=best.userData.isPig?50:10;document.getElementById('score').textContent='🏆 '+score;showToast(best.userData.isPig?'🐷 COCHON TOUCHÉ ! +50':'TOUCHÉ ! +10');removeTarget(best)}else showToast('RATÉ !')
+ const shot=document.createElement('div');shot.style.cssText=`position:absolute;z-index:8;left:${x-13}px;top:${y-6}px;width:26px;height:12px;border-radius:8px;background:linear-gradient(90deg,#6e2118,#c34a2d,#7b251a);border:2px solid #e6a06b;pointer-events:none;transition:transform .32s ease-out,opacity .32s`; document.body.appendChild(shot);requestAnimationFrame(()=>{shot.style.transform=`translate(${dx*1.25}px,${dy*1.25}px) rotate(480deg)`;shot.style.opacity='0'});setTimeout(()=>shot.remove(),360);
+ if(best){score+=best.userData.isPig?50:10;document.getElementById('score').textContent='SCORE  '+score;showToast(best.userData.isPig?'COSTUME TOUCHÉ ! +50':'TOUCHÉ ! +10');removeTarget(best)}else showToast('RATÉ !')
 }
 renderer.domElement.addEventListener('pointerdown',e=>{gesture={x:e.clientX,y:e.clientY};});
 renderer.domElement.addEventListener('pointerup',e=>{if(!gesture)return;launch(gesture.x,gesture.y,e.clientX-gesture.x,e.clientY-gesture.y);gesture=null;});
@@ -122,10 +150,10 @@ document.getElementById('resume').onclick=()=>{paused=false;last=performance.now
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}addEventListener('resize',resize);
 function animate(t){requestAnimationFrame(animate);const dt=Math.min((t-last)/1000,.05);if(!paused)last=t;
  if(running&&!paused){
-  elapsed+=dt;const left=Math.max(0,60-elapsed);document.getElementById('timer').textContent='⏱ '+Math.ceil(left);
+  elapsed+=dt;const left=Math.max(0,60-elapsed);document.getElementById('timer').textContent='TEMPS  '+Math.ceil(left);
   const stage=Math.min(5,Math.floor(elapsed/10));mount.style.filter=stage===0?'blur(0px)':'blur('+(stage*.7)+'px)';
-  if(elapsed>=10&&Math.floor(elapsed/10)>Math.floor((elapsed-dt)/10)){showToast(['','🍷 Vision un peu trouble…','🍷 Ça tourne…','🍷 Difficile de viser !','🍷 Le ranch tangue…','🍷 Dernières secondes !'][stage]||'🍷 Vision trouble');}
-  if(t-spawnAt>900+Math.random()*450){spawn();spawnAt=t}
+  if(elapsed>=10&&Math.floor(elapsed/10)>Math.floor((elapsed-dt)/10)){showToast(['','VISION TROUBLÉE','LA VISION SE DÉGRADE','VISÉE DIFFICILE','LE RANCH VACILLE','DERNIÈRES SECONDES'][stage]||'🍷 Vision trouble');}
+  if(t-spawnAt>650+Math.random()*300){spawn();spawnAt=t}
   for(const g of targets.slice()){g.position.x+=g.userData.vx*dt;g.position.y=Math.abs(Math.sin(t*.006+g.userData.phase))*.06;g.rotation.y=g.userData.vx>0?0:Math.PI;if(Math.abs(g.position.x)>15)removeTarget(g)}
   if(left<=0)finish()
  }
