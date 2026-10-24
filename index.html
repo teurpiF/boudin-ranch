@@ -100,38 +100,68 @@ function carvedColumn(x,z){
  // petites moulures polygonales au pied et sous le chapiteau
  for(let i=0;i<8;i++){const a=i*Math.PI/4;ico(g,Math.cos(a)*.68,.28,Math.sin(a)*.68,.12,.12,.12,wood2,0)}
 }
-carvedColumn(-9,-4.5);carvedColumn(9,-4.5);
+carvedColumn(-5.8,-4.5);carvedColumn(5.8,-4.5);
 // Sculptures figuratives inspirées des poteaux monumentaux du ranch.
 function eagleCarving(x,z){
  const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
- // corps taillé dans le fût, tête et bec de profil
- ico(g,0,5.2,.04,.46,.95,.42,lightWood,1);
- ico(g,.05,6.05,.05,.48,.52,.42,cream,1);
- ico(g,.27,6.12,.39,.32,.18,.28,wood2,1); // bec
- ico(g,.2,6.25,.36,.08,.08,.07,darkWood,0);
- // ailes déployées, facettées, et plumes en éventail
+ // Aigle monumental taillé dans le même tronc que le pilier : poitrine large,
+ // tête tournée de profil, bec crochu et deux ailes déployées en éventail.
+ const carved=mat(0xa77b4e),carvedLight=mat(0xc09a6b),carvedShadow=mat(0x765236),grain=mat(0x8d6844);
+ ico(g,0,4.65,.04,.58,1.45,.48,carved,1); // poitrine intégrée au fût
+ ico(g,.06,5.78,.08,.48,.5,.42,carvedLight,1); // tête
+ ico(g,.16,5.9,.38,.34,.19,.27,carvedShadow,1); // bec crochu
+ ico(g,.35,5.79,.42,.16,.11,.14,carved,0); // pointe du bec
+ ico(g,.02,6.0,.39,.065,.065,.045,darkWood,0); // œil
+ // Ailes larges qui remontent depuis les épaules, avec plusieurs grandes plumes.
  for(const side of [-1,1]){
-  const wing=ico(g,side*.66,5.45,0,.42,.8,.22,wood2,1);wing.rotation.z=side*.25;
-  for(let i=0;i<4;i++){const f=ico(g,side*(.48+i*.16),4.95-i*.12,.13,.13,.46,.11,i%2?lightWood:cream,0);f.rotation.z=side*(.35+i*.08)}
+   const wing=ico(g,side*.68,5.12,.02,.48,.94,.25,carved,1);wing.rotation.z=side*.24;
+   const shoulder=ico(g,side*.43,5.55,.25,.28,.52,.12,carvedLight,1);shoulder.rotation.z=side*.38;
+   for(let i=0;i<5;i++){
+     const feather=ico(g,side*(.48+i*.17),4.76-i*.14,.18,.16,.55-i*.025,.105,i%2?carvedLight:carvedShadow,0);
+     feather.rotation.z=side*(.42+i*.10);
+   }
  }
- // serres stylisées
- for(const side of [-1,1]){ico(g,side*.22,4.3,.22,.16,.28,.15,darkWood,0);for(let j=0;j<3;j++){const talon=ico(g,side*.22+(j-1)*.09,4.12,.31,.045,.17,.05,darkWood,0);talon.rotation.z=-.3}}
- // grain et marques de ciseau
- for(let i=0;i<5;i++)box(g,-.15+i*.07,3.1+i*.19,.48,.025,.24,.025,darkWood,0,0,.12);
+ // Serres marquées au-dessus du socle sculpté.
+ for(const side of [-1,1]){
+   ico(g,side*.22,3.85,.25,.19,.25,.16,carvedLight,0);
+   for(let j=0;j<3;j++){const claw=ico(g,side*.22+(j-1)*.105,3.64,.34,.055,.2,.055,carvedShadow,0);claw.rotation.z=-.22;}
+ }
+ // Stries de ciseau et veinures du bois.
+ for(let i=0;i<7;i++)box(g,-.27+i*.09,3.1+i*.17,.49,.025,.22,.018,grain,0,0,.1);
 }
 function humanCarving(x,z){
  const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
- // visage sculpté dans le tronc, coiffure/plumes simplifiées mais reconnaissables
- ico(g,0,5.7,.12,.48,.72,.38,lightWood,1);
- ico(g,0,6.35,.08,.52,.28,.3,wood2,1);
- for(let i=0;i<5;i++){const feather=ico(g,(i-2)*.17,6.67-Math.abs(i-2)*.05,.06,.11,.46,.1,i%2?cream:wood2,0);feather.rotation.z=(i-2)*-.16}
- for(const ex of [-.18,.18]){ico(g,ex,5.86,.45,.07,.055,.035,darkWood,0);box(g,ex,5.96,.46,.15,.025,.035,darkWood)}
- box(g,0,5.55,.47,.17,.055,.035,darkWood);ico(g,0,5.34,.42,.2,.12,.06,cream,0);
- // épaules et bras sculptés en relief
- ico(g,-.5,4.95,.02,.28,.72,.24,wood2,1).rotation.z=-.35;ico(g,.5,4.95,.02,.28,.72,.24,wood2,1).rotation.z=.35;
- box(g,-.17,4.1,.28,.13,.7,.13,lightWood,0,0,-.08);box(g,.17,4.1,.28,.13,.7,.13,lightWood,0,0,.08);
+ // Figure humaine sculptée dans le pilier, plus proche d'une statue en relief
+ // que d'un personnage posé devant le bois.
+ const carved=mat(0xb58b5b),carvedLight=mat(0xc8a477),carvedShadow=mat(0x795637),incise=mat(0x62452e);
+ // buste et épaules directement fusionnés visuellement au tronc
+ ico(g,0,4.35,.08,.65,1.08,.45,carved,1);
+ ico(g,0,5.25,.12,.48,.65,.4,carvedLight,1); // tête et visage
+ ico(g,0,5.77,.08,.54,.2,.35,carvedShadow,1); // coiffe / cheveux
+ // Visage plus lisible : sourcils, yeux, nez, pommettes et bouche gravée
+ for(const ex of [-.18,.18]){
+   box(g,ex,5.38,.46,.17,.045,.035,incise,0,0,ex<0?-.12:.12);
+   ico(g,ex,5.31,.47,.055,.045,.03,darkWood,0);
+ }
+ ico(g,0,5.18,.49,.09,.2,.08,carvedShadow,0); // nez
+ box(g,0,5.03,.48,.17,.035,.035,incise);
+ ico(g,-.28,5.18,.3,.13,.16,.08,carved,0);ico(g,.28,5.18,.3,.13,.16,.08,carved,0);
+ // Longs éléments sculptés de coiffure/ornement qui suivent la colonne.
+ for(let i=0;i<7;i++){
+   const xx=(i-3)*.14;
+   const strand=ico(g,xx,5.93-Math.abs(i-3)*.035,.05,.075,.43,.085,i%2?carvedLight:carvedShadow,0);
+   strand.rotation.z=(i-3)*-.13;
+ }
+ // Bras pliés, sculptés en bas-relief sur les côtés du tronc.
+ const armL=ico(g,-.48,4.55,.2,.22,.62,.17,carvedLight,0);armL.rotation.z=-.28;
+ const armR=ico(g,.48,4.55,.2,.22,.62,.17,carvedShadow,0);armR.rotation.z=.28;
+ // Ceinture et jambes taillées dans la base du fût.
+ box(g,0,3.82,.34,.72,.13,.12,carvedShadow);
+ box(g,-.2,3.35,.27,.19,.68,.17,carvedLight,0,0,-.05);
+ box(g,.2,3.35,.27,.19,.68,.17,carved,0,0,.05);
+ for(let i=0;i<5;i++)box(g,-.24+i*.12,3.05,.48,.025,.19,.018,incise,0,0,.08);
 }
-eagleCarving(-9,-4.5);humanCarving(9,-4.5);
+eagleCarving(-5.8,-4.5);humanCarving(5.8,-4.5);
 // triangular-looking roof trusses, intentionally chunky low-poly beams
 for(let z=-14;z<=6;z+=4){box(scene,0,9.35,z,29,.32,.38,darkWood);box(scene,-4.5,8.25,z,12,.28,.32,wood2,0,0,-.48);box(scene,4.5,8.25,z,12,.28,.32,wood2,0,0,.48)}
 box(scene,0,6.25,-10,24,.18,.22,darkWood);
@@ -184,26 +214,41 @@ function tableSet(x,z,w=4.2){
 tableSet(-5,-.3,3.7);tableSet(1.3,-.9,4.0);tableSet(6,-.1,3.4);
 // Homme suspendu à la charpente, comme sur la photo du ranch : pose comique, sans bloquer les cibles.
 function hangingMan(){
- const g=new THREE.Group();g.position.set(3.5,7.8,-6.7);scene.add(g);
- const yellow=mat(0xc6a12d),jeans=mat(0x25364b),hair=mat(0x29221d),face=mat(0xc48c63),shirtDark=mat(0x34302b);
- // mains agrippées à la poutre
- ico(g,-.46,.45,.05,.13,.13,.13,face,0);ico(g,.46,.45,.05,.13,.13,.13,face,0);
- box(g,-.23,.34,0,.4,.13,.18,shirtDark);box(g,.23,.34,0,.4,.13,.18,shirtDark);
- // torse incliné et tête tournée vers la salle
- box(g,0,-.22,.02,.72,.78,.35,yellow,0,0,-.12);
- ico(g,0,-.78,.08,.25,.29,.25,face,0);ico(g,0,-.57,.08,.28,.11,.26,hair,0);
- // moustache et traits du visage
- box(g,0,-.84,.31,.18,.055,.035,hair);ico(g,-.08,-.81,.32,.035,.035,.025,hair,0);ico(g,.08,-.81,.32,.035,.035,.025,hair,0);
- // bras vers le haut
- box(g,-.48,.05,0,.17,.62,.17,yellow,0,0,-.42);box(g,.48,.05,0,.17,.62,.17,yellow,0,0,.42);
- // jambes qui pendent en biais
- box(g,-.19,-1.45,0,.22,.82,.22,jeans,0,0,-.12);box(g,.19,-1.47,0,.22,.82,.22,jeans,0,0,.16);
- box(g,-.2,-1.88,.1,.32,.15,.4,shirtDark);box(g,.2,-1.88,.1,.32,.15,.4,shirtDark);
+ const g=new THREE.Group();g.position.set(2.8,8.8,-6.7);scene.add(g);
+ const yellow=mat(0xd5b52d),jeans=mat(0x24364d),hair=mat(0x211a16),face=mat(0xc99069),shirtDark=mat(0x332a22),skinLight=mat(0xd9a078);
+ // Mains visibles autour de la poutre, doigts agrippés au bois.
+ for(const x of [-.48,.48]){
+   ico(g,x,.28,.12,.14,.13,.13,skinLight,1);
+   for(let i=0;i<3;i++)ico(g,x+(i-1)*.065,.36,.2,.035,.12,.035,face,0);
+   const sleeve=box(g,x*.72,.03,.02,.22,.42,.23,yellow,0,0,x<0?-.32:.32);
+   box(g,x*.92,.29,.08,.13,.22,.15,shirtDark,0,0,x<0?-.3:.3);
+ }
+ // Torse et col du maillot jaune, incliné sous l'effort.
+ box(g,0,-.28,.02,.77,.83,.39,yellow,0,0,-.12);
+ box(g,0,.08,.24,.25,.13,.04,shirtDark,0,0,-.12);
+ // Tête tournée vers les clients, cheveux foncés et moustache bien marquée.
+ const head=ico(g,.02,-.82,.12,.29,.33,.28,face,1);head.rotation.z=-.08;
+ ico(g,.01,-.59,.1,.31,.14,.29,hair,1);
+ ico(g,-.22,-.76,.13,.12,.18,.16,hair,0);ico(g,.23,-.77,.13,.11,.16,.15,hair,0);
+ for(const ex of [-.09,.12]){
+   ico(g,ex,-.83,.365,.04,.04,.025,darkWood,0);
+   box(g,ex,-.77,.37,.095,.022,.02,hair,0,0,ex<0?-.12:.12);
+ }
+ box(g,.02,-.91,.38,.22,.075,.045,hair,0,0,-.04); // moustache
+ ico(g,.02,-1.02,.34,.12,.045,.035,face,0); // menton
+ // Bras supérieurs, coudes et avant-bras qui remontent jusqu'aux mains.
+ const upperL=box(g,-.42,-.1,.01,.19,.46,.19,yellow,0,0,-.36);
+ const upperR=box(g,.42,-.1,.01,.19,.46,.19,yellow,0,0,.36);
+ // Jambes qui pendent séparément, genoux et chaussures sombres.
+ box(g,-.2,-1.36,.01,.24,.55,.24,jeans,0,0,-.12);
+ box(g,.2,-1.38,.01,.24,.58,.24,jeans,0,0,.15);
+ box(g,-.23,-1.72,.12,.3,.16,.42,shirtDark,0,0,-.08);
+ box(g,.23,-1.74,.12,.3,.16,.42,shirtDark,0,0,.08);
 }
 hangingMan();
 // sign
-box(scene,0,7.8,-12.5,8.6,1.7,.4,darkWood);box(scene,0,7.8,-12.28,8.25,1.48,.12,mat(0x302015));
-const signCanvas=document.createElement('canvas');signCanvas.width=512;signCanvas.height=128;const ctx=signCanvas.getContext('2d');ctx.font='bold 62px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff0cb';ctx.shadowColor='#321808';ctx.shadowBlur=4;ctx.fillText('BOUDIN RANCH',256,66);const tex=new THREE.CanvasTexture(signCanvas);const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(7.9,1.35),new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));signMesh.position.set(0,7.8,-12.16);scene.add(signMesh);
+box(scene,0,6.35,-12.5,8.6,1.7,.4,darkWood);box(scene,0,6.35,-12.28,8.25,1.48,.12,mat(0x302015));
+const signCanvas=document.createElement('canvas');signCanvas.width=512;signCanvas.height=128;const ctx=signCanvas.getContext('2d');ctx.font='bold 62px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff0cb';ctx.shadowColor='#321808';ctx.shadowBlur=4;ctx.fillText('BOUDIN RANCH',256,66);const tex=new THREE.CanvasTexture(signCanvas);const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(7.9,1.35),new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));signMesh.position.set(0,6.35,-12.16);scene.add(signMesh);
 const targets=[];
 function makePerson(isPig=false){
  const g=new THREE.Group();scene.add(g);const cloth=isPig?pink:[red,blue,mat(0x5c6550),mat(0x8d623d)][Math.floor(Math.random()*4)];
