@@ -100,8 +100,9 @@ function carvedColumn(x,z){
  // petites moulures polygonales au pied et sous le chapiteau
  for(let i=0;i<8;i++){const a=i*Math.PI/4;ico(g,Math.cos(a)*.68,.28,Math.sin(a)*.68,.12,.12,.12,wood2,0)}
 }
-carvedColumn(-5.8,-4.5);carvedColumn(5.8,-4.5);
+carvedColumn(-1.75,-4.5);carvedColumn(1.75,-4.5);
 // Sculptures figuratives inspirées des poteaux monumentaux du ranch.
+// Les deux piliers sont rapprochés du centre pour rester visibles en portrait sur mobile.
 function eagleCarving(x,z){
  const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
  // Aigle monumental taillé dans le même tronc que le pilier : poitrine large,
@@ -161,7 +162,7 @@ function humanCarving(x,z){
  box(g,.2,3.35,.27,.19,.68,.17,carved,0,0,.05);
  for(let i=0;i<5;i++)box(g,-.24+i*.12,3.05,.48,.025,.19,.018,incise,0,0,.08);
 }
-eagleCarving(-5.8,-4.5);humanCarving(5.8,-4.5);
+eagleCarving(-1.75,-4.5);humanCarving(1.75,-4.5);
 // triangular-looking roof trusses, intentionally chunky low-poly beams
 for(let z=-14;z<=6;z+=4){box(scene,0,9.35,z,29,.32,.38,darkWood);box(scene,-4.5,8.25,z,12,.28,.32,wood2,0,0,-.48);box(scene,4.5,8.25,z,12,.28,.32,wood2,0,0,.48)}
 box(scene,0,6.25,-10,24,.18,.22,darkWood);
