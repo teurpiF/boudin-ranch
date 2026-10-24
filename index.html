@@ -30,13 +30,13 @@ canvas{display:block;width:100%;height:100%}
 button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df8e36);color:#321909;font-size:17px;font-weight:1000;padding:13px 16px;margin-top:12px;box-shadow:0 4px #8c4b1c}
 @media (max-height:620px){#brand{top:10%}#tip{top:19%}.card{padding:16px}.card p{margin:5px}}
 @media (max-width:600px){
- #brand{top:11%;font-size:clamp(15px,4.3vw,22px);padding:5px 9px;border-width:2px}
+ #brand{top:10%;font-size:clamp(15px,4.3vw,22px);padding:5px 9px;border-width:2px}
  .hud{padding:calc(env(safe-area-inset-top, 0px) + 7px) 7px 7px;gap:5px}
  .panel{padding:6px 8px;border-width:1px;border-radius:8px}
  #score{font-size:12px}#timer{font-size:17px;min-width:65px}#pause{font-size:17px;padding:5px 8px}
- #tip{top:18%;font-size:11px;padding:0 12px;line-height:1.3}
- #aim{bottom:13%;width:48px;height:18px}
- #throwHint{bottom:5%;font-size:10px;padding:0 8px}
+ #tip{top:17%;font-size:11px;padding:0 12px;line-height:1.3}
+ #aim{bottom:12%;width:48px;height:18px}
+ #throwHint{bottom:4%;font-size:10px;padding:0 8px}
  #footer{display:none}
  .overlay{padding:12px}
  .card{max-height:calc(100dvh - 24px);overflow:auto;padding:18px 14px;border-width:3px;border-radius:16px}
@@ -44,7 +44,7 @@ button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df
  .card p{font-size:14px;line-height:1.25;margin:7px 0}
  button.action{font-size:15px;padding:11px 12px;margin-top:9px}
 }
-@media (max-width:600px) and (orientation:landscape){#brand{top:13%}#tip{top:22%}#aim{bottom:10%}#throwHint{bottom:2%}}
+@media (max-width:600px) and (orientation:landscape){#brand{top:10%}#tip{top:19%}#aim{bottom:9%}#throwHint{bottom:1%}}
 </style>
 </head>
 <body>
@@ -64,7 +64,7 @@ const mount=document.getElementById('scene');
 if(!window.THREE){mount.innerHTML='<div style="padding:30px;color:white">Le moteur 3D n’a pas pu charger. Vérifie ta connexion puis recharge la page.</div>';return;}
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x87603d);scene.fog=new THREE.Fog(0x87603d,17,42);
 const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,100);camera.position.set(0,3.25,10.7);camera.lookAt(0,2.55,-4.5);
-const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.4));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;mount.appendChild(renderer.domElement);
+const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.15));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;mount.appendChild(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xffd9a1,0x352014,1.65));
 const sun=new THREE.DirectionalLight(0xffc477,2.9);sun.position.set(-4,9,5);scene.add(sun);
 const mat=(c)=>new THREE.MeshStandardMaterial({color:c,roughness:1,flatShading:true});
@@ -255,9 +255,10 @@ function resize(){
  const aspect=innerWidth/innerHeight;
  camera.aspect=aspect;
  if(aspect<0.8){
-   // Portrait mobile: pull back and widen the field of view so the ranch and targets fit.
-   camera.fov=68;camera.position.set(0,3.6,16.8);camera.lookAt(0,2.7,-4.5);
-   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.15));
+   // Portrait mobile: bring the seated player's viewpoint closer to the plate.
+   // Keep the passers visible beyond the table without making the plate look distant.
+   camera.fov=49;camera.position.set(0,2.55,9.2);camera.lookAt(0,2.0,-3.4);
+   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.2));
  }else{
    camera.fov=54;camera.position.set(0,3.25,10.7);camera.lookAt(0,2.55,-4.5);
    renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.4));
