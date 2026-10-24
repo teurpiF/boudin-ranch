@@ -45,9 +45,21 @@ button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df
  button.action{font-size:15px;padding:11px 12px;margin-top:9px}
 }
 @media (max-width:600px) and (orientation:landscape){#brand{top:10%}#tip{top:19%}#aim{bottom:9%}#throwHint{bottom:1%}}
+
+/* Version pensée d'abord pour le jeu en portrait sur téléphone */
+@media (max-width:600px) and (orientation:portrait){
+ #brand{top:13%;max-width:86vw;white-space:normal;text-align:center;font-size:clamp(17px,5vw,23px)}
+ #tip{top:20%;font-size:clamp(10px,2.8vw,12px);max-width:100%;padding:0 16px}
+ .hud{padding-top:calc(env(safe-area-inset-top, 0px) + 8px)}
+ #aim{bottom:13%;}
+ #throwHint{bottom:4.5%;font-size:11px}
+}
+#portraitNotice{display:none;position:absolute;inset:0;z-index:20;background:#21160f;color:#ffe3ad;align-items:center;justify-content:center;text-align:center;padding:28px;font-weight:900;font-size:20px;line-height:1.5}
+@media (max-width:600px) and (orientation:landscape){#portraitNotice{display:flex}}
 </style>
 </head>
 <body>
+<div id="portraitNotice">BOUDIN RANCH<br><br>Pour jouer, tourne ton téléphone à la verticale.</div>
 <div id="scene"></div>
 <div id="brand">BOUDIN RANCH</div>
 <div class="hud"><div class="panel" id="score">SCORE&nbsp; 0</div><div class="panel" id="timer">TEMPS&nbsp; 60</div><button id="pause" aria-label="Pause">Ⅱ</button></div>
@@ -301,9 +313,8 @@ function resize(){
  const aspect=innerWidth/innerHeight;
  camera.aspect=aspect;
  if(aspect<0.8){
-   // Portrait mobile: bring the seated player's viewpoint closer to the plate.
-   // Keep the passers visible beyond the table without making the plate look distant.
-   camera.fov=49;camera.position.set(0,2.55,9.2);camera.lookAt(0,2.0,-3.4);
+   // Portrait prioritaire : cadrage vertical, sculptures dans le champ et assiette proche.
+   camera.fov=46;camera.position.set(0,2.48,8.8);camera.lookAt(0,2.15,-3.15);
    renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.2));
  }else{
    camera.fov=54;camera.position.set(0,3.25,10.7);camera.lookAt(0,2.55,-4.5);
