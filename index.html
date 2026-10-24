@@ -35,7 +35,7 @@ button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df
 <div id="scene"></div>
 <div id="brand">BOUDIN RANCH</div>
 <div class="hud"><div class="panel" id="score">SCORE&nbsp; 0</div><div class="panel" id="timer">TEMPS&nbsp; 60</div><button id="pause" aria-label="Pause">Ⅱ</button></div>
-<div id="tip">VISE PRÉCISÉMENT LE PASSANT ET FAIS UN PETIT GESTE RAPIDE !</div>
+<div id="tip">VISE LE PASSANT, PUIS GLISSE RAPIDEMENT LE DOIGT POUR LANCER !</div>
 <div id="aim" aria-hidden="true"></div><div id="throwHint">PASSANT : +10 &nbsp; • &nbsp; COCHON : +50</div><div id="toast"></div>
 <div id="footer">BOUDIN RANCH • JEU DE RÉFLEXES</div>
 <div id="start" class="overlay"><div class="card"><h1>BOUDIN<br>RANCH</h1><p>Bienvenue dans le ranch !</p><p>Passant touché : <b>+10 points</b></p><p>Personnage en costume de cochon touché : <b>+50 points</b></p><p>Toutes les 10 secondes, la vision se trouble davantage.</p><p>Les cibles sont petites : les lancers doivent être précis.</p><p>Tu as 60 secondes pour marquer un maximum de points.</p><button class="action" id="play">ENTRER DANS LE RANCH</button></div></div>
@@ -131,11 +131,23 @@ box(scene,10,1.5,-13,3.6,3,.9,cream);box(scene,10,2.5,-12.48,2.2,1.6,.12,darkWoo
 // foreground table, sausages and cup
 box(scene,0,1.2,5,13,.32,2.2,lightWood);
 for(const x of [-5.5,5.5])for(const z of [4.3,5.7])box(scene,x,.55,z,.25,1.3,.25,darkWood);
-for(let i=0;i<5;i++){
- const s=cyl(scene,-2.2+i*.72,1.49,4.6,.15,.17,.88,mat(i%2?0x35201b:0x482720),9);s.rotation.z=Math.PI/2+.12;
- ico(scene,-2.2+i*.72-.43,1.49,4.6,.13,.12,.13,darkWood,0);ico(scene,-2.2+i*.72+.43,1.49,4.6,.13,.12,.13,darkWood,0);
-}
-cyl(scene,-4,1.65,4.4,.48,.48,.08,cream,8);cyl(scene,-4,1.95,4.4,.4,.4,.52,mat(0xb47a43),8);cyl(scene,-4,2.22,4.4,.42,.42,.06,cream,8);
+// Assiette du joueur inspirée de la photo : grande assiette blanche, boudin noir ouvert,
+// compote jaune pâle et dés de betterave rouge sombre.
+const plateWhite=mat(0xf0eee6),plateRim=mat(0xd9d5ca),sausageSkin=mat(0x291713),sausageShine=mat(0x4b2920),filling=mat(0x6a3b22),appleSauce=mat(0xc8a15f),beet=mat(0x6e1022),beetLight=mat(0x98263a);
+cyl(scene,-2.35,1.43,4.55,.92,.92,.09,plateRim,16);cyl(scene,-2.35,1.49,4.55,.82,.82,.045,plateWhite,16);
+// Compote en tas irrégulier à gauche de l'assiette.
+ico(scene,-2.62,1.535,4.32,.38,.055,.27,appleSauce,1);ico(scene,-2.78,1.54,4.38,.22,.045,.19,mat(0xd7b978),1);ico(scene,-2.47,1.54,4.28,.19,.04,.16,appleSauce,1);
+// Boudin noir entier, légèrement courbé et noué aux extrémités, avec une fente ouverte.
+const sausageGroup=new THREE.Group();sausageGroup.position.set(-1.98,1.61,4.64);sausageGroup.rotation.y=-.27;sausageGroup.rotation.z=-.34;scene.add(sausageGroup);
+const sausage=cyl(sausageGroup,0,0,0,.205,.22,.98,sausageSkin,12);sausage.rotation.x=Math.PI/2;
+const sausageHighlight=ico(sausageGroup,.025,.17,.02,.11,.035,.36,sausageShine,1);sausageHighlight.rotation.x=.18;
+// Fente longitudinale révélant la farce brun doré.
+const slit=ico(sausageGroup,.015,.194,-.02,.105,.035,.34,filling,1);slit.rotation.x=.12;
+for(let i=0;i<7;i++){const crumb=ico(sausageGroup,(Math.random()-.5)*.12,.225,-.27+i*.085,.035,.025,.045,mat(i%2?0x9b6635:0x4a2c1b),0);crumb.rotation.z=Math.random()*.6-.3}
+for(const z of [-.53,.53]){const knot=ico(sausageGroup,0,0,z,.09,.085,.10,sausageSkin,0);const tie=ico(sausageGroup,0,.045,z*1.12,.035,.025,.06,mat(0x6d5141),0)}
+// Quelques dés de betterave brillants, séparés les uns des autres comme sur la photo.
+for(let i=0;i<23;i++){const x=-2.12+(Math.random()-.5)*.66,z=4.86+(Math.random()-.5)*.52,size=.045+Math.random()*.045;const cube=box(scene,x,1.535+Math.random()*.018,z,size,size*.8,size,Math.random()>.35?beet:beetLight);cube.rotation.set(Math.random()*.35,Math.random(),Math.random()*.35)}
+// Gobelet plastique transparent avec vin rouge.
 cyl(scene,4.2,1.76,4.4,.23,.2,.48,mat(0xb9c4c4),7);cyl(scene,4.2,2.01,4.4,.2,.2,.035,mat(0x6e241c),7);
 // Tables de clients entre le joueur et les passants : assiettes sales et gobelets de vin rouge.
 const dirtyPlate=mat(0xd7d0b9),foodBits=[mat(0x6b2c20),mat(0x9a6234),mat(0x5b4938)],plastic=mat(0xdde2df);
@@ -192,7 +204,7 @@ function makePerson(isPig=false){
   cyl(g,0,2.53,0,.38,.38,.13,darkWood,7);cyl(g,0,2.63,0,.3,.3,.08,wood2,7);
   box(g,-.42,1.5,0,.16,.65,.17,pink,0,0,-.3);box(g,.42,1.5,0,.16,.65,.17,pink,0,0,.3);
  }
- g.userData.isPig=isPig;g.userData.phase=Math.random()*6;g.userData.vx=0;return g
+ g.userData.isPig=isPig;g.userData.phase=Math.random()*6;g.userData.vx=0;g.userData.hit=false;return g
 }
 let score=0,elapsed=0,running=false,paused=false,last=0,spawnAt=0,gesture=null,toastTimer=0;
 function showToast(text){const el=document.getElementById('toast');el.textContent=text;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.textContent='',900)}
@@ -207,17 +219,18 @@ document.getElementById('initials').addEventListener('input',e=>{e.target.value=
 function launch(x,y,dx,dy){
  if(!running||paused)return;
  const targetX=x+dx*1.25,targetY=y+dy*1.25,candidates=targets.slice();let best=null,bestD=38;
- for(const g of candidates){const p=g.position.clone();p.y+=1.2;p.project(camera);const sx=(p.x*.5+.5)*innerWidth,sy=(-p.y*.5+.5)*innerHeight,d=Math.hypot(sx-targetX,sy-targetY);if(d<bestD){bestD=d;best=g}}
- const shot=document.createElement('div');shot.style.cssText=`position:absolute;z-index:8;left:${x-12}px;top:${y-8}px;width:27px;height:15px;border-radius:45% 55% 48% 52%;background:linear-gradient(135deg,#21120f 0%,#4a211b 42%,#170c0a 100%);border:1px solid #8b5140;box-shadow:inset 2px 1px 2px #9b6250;pointer-events:none;transition:transform .38s cubic-bezier(.2,.75,.3,1),opacity .45s`;shot.innerHTML='<i style="position:absolute;width:5px;height:10px;left:5px;top:10px;background:#8d171e;border-radius:70% 30% 60% 40%;transform:rotate(25deg)"></i><i style="position:absolute;width:4px;height:8px;right:3px;top:12px;background:#a31b22;border-radius:60% 40% 70% 30%"></i>';document.body.appendChild(shot);requestAnimationFrame(()=>{shot.style.transform=`translate(${dx*1.25}px,${dy*1.25}px) rotate(560deg) scale(1.15,.78)`;shot.style.opacity='0'});setTimeout(()=>shot.remove(),470);
- if(best){score+=best.userData.isPig?50:10;document.getElementById('score').textContent='SCORE  '+score;
+ for(const g of candidates){if(g.userData.hit)continue;const p=g.position.clone();p.y+=1.2;p.project(camera);const sx=(p.x*.5+.5)*innerWidth,sy=(-p.y*.5+.5)*innerHeight,d=Math.hypot(sx-targetX,sy-targetY);if(d<bestD){bestD=d;best=g}}
+ const shot=document.createElement('div');shot.style.cssText=`position:absolute;z-index:8;left:${x-12}px;top:${y-8}px;width:27px;height:15px;border-radius:45% 55% 48% 52%;background:linear-gradient(135deg,#21120f 0%,#4a211b 42%,#170c0a 100%);border:1px solid #8b5140;box-shadow:inset 2px 1px 2px #9b6250;pointer-events:none;transition:transform .62s cubic-bezier(.2,.75,.3,1),opacity .7s`;shot.innerHTML='<i style="position:absolute;width:5px;height:10px;left:5px;top:10px;background:#8d171e;border-radius:70% 30% 60% 40%;transform:rotate(25deg)"></i><i style="position:absolute;width:4px;height:8px;right:3px;top:12px;background:#a31b22;border-radius:60% 40% 70% 30%"></i>';document.body.appendChild(shot);requestAnimationFrame(()=>{shot.style.transform=`translate(${dx*1.25}px,${dy*1.25}px) rotate(430deg) scale(1.05,.86)`;shot.style.opacity='0'});setTimeout(()=>shot.remove(),700);
+ if(best){best.userData.hit=true;score+=best.userData.isPig?50:10;document.getElementById('score').textContent='SCORE  '+score;
   // Tache persistante sur la cible : le personnage continue sa route.
   const stain=ico(best,0,1.4,.205,.22,.18,.035,mat(0x8e101b),0);stain.rotation.z=Math.random()*.8-.4;
   for(let i=0;i<3;i++){const drop=ico(best,(Math.random()-.5)*.35,1.2-Math.random()*.25,.22,.045,.07,.025,mat(0x9d1821),0);drop.rotation.z=Math.random()*.8-.4}
   showToast(best.userData.isPig?'COSTUME TOUCHÉ ! +50':'TOUCHÉ ! +10')
  }else showToast('RATÉ !')
 }
-renderer.domElement.addEventListener('pointerdown',e=>{gesture={x:e.clientX,y:e.clientY};});
-renderer.domElement.addEventListener('pointerup',e=>{if(!gesture)return;launch(gesture.x,gesture.y,e.clientX-gesture.x,e.clientY-gesture.y);gesture=null;});
+renderer.domElement.addEventListener('pointerdown',e=>{if(!running||paused)return;gesture={x:e.clientX,y:e.clientY,id:e.pointerId};try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_){} });
+renderer.domElement.addEventListener('pointerup',e=>{if(!gesture)return;const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;const distance=Math.hypot(dx,dy);if(distance>=42)launch(gesture.x,gesture.y,dx,dy);else showToast('FAIS UN GESTE DE LANCER !');gesture=null;});
+renderer.domElement.addEventListener('pointercancel',()=>{gesture=null});
 document.getElementById('play').onclick=start;document.getElementById('again').onclick=start;
 document.getElementById('pause').onclick=()=>{if(!running)return;paused=true;document.getElementById('pauseScreen').classList.remove('hidden')};
 document.getElementById('resume').onclick=()=>{paused=false;last=performance.now();document.getElementById('pauseScreen').classList.add('hidden')};
