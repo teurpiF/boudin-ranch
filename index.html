@@ -127,11 +127,12 @@ function eagleCarving(x,z){
  ico(g,.02,6.0,.39,.065,.065,.045,darkWood,0); // œil
  // Ailes larges qui remontent depuis les épaules, avec plusieurs grandes plumes.
  for(const side of [-1,1]){
-   const wing=ico(g,side*.68,5.12,.02,.48,.94,.25,carved,1);wing.rotation.z=side*.24;
-   const shoulder=ico(g,side*.43,5.55,.25,.28,.52,.12,carvedLight,1);shoulder.rotation.z=side*.38;
-   for(let i=0;i<5;i++){
-     const feather=ico(g,side*(.48+i*.17),4.76-i*.14,.18,.16,.55-i*.025,.105,i%2?carvedLight:carvedShadow,0);
-     feather.rotation.z=side*(.42+i*.10);
+   const wing=ico(g,side*.78,5.18,.12,.72,.68,.24,carved,0);wing.rotation.z=side*.52;
+   const shoulder=ico(g,side*.48,5.48,.32,.34,.46,.16,carvedLight,0);shoulder.rotation.z=side*.48;
+   // Grandes plumes en éventail, sculptées comme des reliefs qui sortent du tronc.
+   for(let i=0;i<6;i++){
+     const feather=ico(g,side*(.52+i*.19),5.12-i*.10,.34,.17,.56-i*.035,.12,i%2?carvedLight:carvedShadow,0);
+     feather.rotation.z=side*(.48+i*.13);
    }
  }
  // Serres marquées au-dessus du socle sculpté.
@@ -149,8 +150,10 @@ function humanCarving(x,z){
  const carved=mat(0xb58b5b),carvedLight=mat(0xc8a477),carvedShadow=mat(0x795637),incise=mat(0x62452e);
  // buste et épaules directement fusionnés visuellement au tronc
  ico(g,0,4.35,.08,.65,1.08,.45,carved,1);
- ico(g,0,5.25,.12,.48,.65,.4,carvedLight,1); // tête et visage
- ico(g,0,5.77,.08,.54,.2,.35,carvedShadow,1); // coiffe / cheveux
+ ico(g,0,5.22,.18,.52,.62,.48,carvedLight,0); // visage en relief, bien avancé sur le tronc
+ ico(g,0,5.67,.17,.56,.20,.42,carvedShadow,0); // bandeau de la coiffe
+ // Plumes longues et distinctes pour rappeler la sculpture humaine photographiée.
+ for(let i=0;i<7;i++){const xx=(i-3)*.15;const plume=ico(g,xx,6.02-Math.abs(i-3)*.045,.12,.09,.48,.09,i%2?carvedLight:carvedShadow,0);plume.rotation.z=(i-3)*-.09;}
  // Visage plus lisible : sourcils, yeux, nez, pommettes et bouche gravée
  for(const ex of [-.18,.18]){
    box(g,ex,5.38,.46,.17,.045,.035,incise,0,0,ex<0?-.12:.12);
@@ -259,9 +262,10 @@ function hangingMan(){
  box(g,.23,-1.74,.12,.3,.16,.42,shirtDark,0,0,.08);
 }
 hangingMan();
-// sign
-box(scene,0,6.35,-12.5,8.6,1.7,.4,darkWood);box(scene,0,6.35,-12.28,8.25,1.48,.12,mat(0x302015));
-const signCanvas=document.createElement('canvas');signCanvas.width=512;signCanvas.height=128;const ctx=signCanvas.getContext('2d');ctx.font='bold 62px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff0cb';ctx.shadowColor='#321808';ctx.shadowBlur=4;ctx.fillText('BOUDIN RANCH',256,66);const tex=new THREE.CanvasTexture(signCanvas);const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(7.9,1.35),new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));signMesh.position.set(0,6.35,-12.16);scene.add(signMesh);
+// Panneau abaissé, contrasté et lisible derrière la charpente.
+box(scene,0,4.95,-12.5,9.2,1.65,.48,darkWood);box(scene,0,4.95,-12.22,8.85,1.34,.14,mat(0x21130c));
+// Lettrage rendu en haute résolution avec contour clair, sans transparence sur le fond.
+const signCanvas=document.createElement('canvas');signCanvas.width=1200;signCanvas.height=240;const ctx=signCanvas.getContext('2d');ctx.fillStyle='#21130c';ctx.fillRect(0,0,1200,240);ctx.strokeStyle='#d3a064';ctx.lineWidth=12;ctx.strokeRect(18,18,1164,204);ctx.font='900 132px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';ctx.strokeStyle='#100904';ctx.lineWidth=13;ctx.strokeText('BOUDIN RANCH',600,124);ctx.fillStyle='#fff0cb';ctx.fillText('BOUDIN RANCH',600,124);const tex=new THREE.CanvasTexture(signCanvas);tex.anisotropy=4;const signMesh=new THREE.Mesh(new THREE.PlaneGeometry(8.55,1.22),new THREE.MeshBasicMaterial({map:tex,depthWrite:false}));signMesh.position.set(0,4.95,-12.12);scene.add(signMesh);
 const targets=[];
 function makePerson(isPig=false){
  const g=new THREE.Group();scene.add(g);const cloth=isPig?pink:[red,blue,mat(0x5c6550),mat(0x8d623d)][Math.floor(Math.random()*4)];
