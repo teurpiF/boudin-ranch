@@ -61,17 +61,17 @@ button.action{border:0;border-radius:12px;background:linear-gradient(#ffd27b,#df
 <div id="portraitNotice">BOUDIN RANCH<br><br>Pour jouer, tourne ton téléphone à la verticale.</div>
 <div id="scene"></div>
 <div class="hud"><div class="panel" id="score">SCORE&nbsp; 0</div><div class="panel" id="timer">TEMPS&nbsp; 60</div><button id="pause" aria-label="Pause">Ⅱ</button></div>
-<div id="tip">VISE LE PASSANT, PUIS GLISSE RAPIDEMENT LE DOIGT POUR LANCER !</div>
+<div id="tip">VISE LES PASSANTS, PUIS GLISSE RAPIDEMENT LE DOIGT POUR LANCER LA PEAU DE TON BOUDIN !</div>
 <div id="aim" aria-hidden="true"></div><div id="throwHint">PASSANT : +10 &nbsp; • &nbsp; COCHON : +50</div><div id="toast"></div>
-<div id="footer">BOUDIN RANCH • JEU DE RÉFLEXES</div>
-<div id="start" class="overlay"><div class="card"><h1>BOUDIN<br>RANCH</h1><p>Bienvenue dans le ranch !</p><p>Passant touché : <b>+10 points</b></p><p>Personnage en costume de cochon touché : <b>+50 points</b></p><p>Toutes les 10 secondes, la vision se trouble davantage.</p><p>Les cibles sont petites : les lancers doivent être précis.</p><p>Tu as 60 secondes pour marquer un maximum de points.</p><button class="action" id="play">ENTRER DANS LE RANCH</button></div></div>
+<div id="footer">BOUDIN RANCH • JEU DE PRECISION</div>
+<div id="start" class="overlay"><div class="card"><h1>BOUDIN<br>RANCH</h1><p>Bienvenue dans le ranch !</p><p>Personnage : <b>+10 points</b></p><p>Tu as touché le cochon ! : <b>+50 points</b></p><p>Toutes les 10 secondes, un verre de rouge. Puis la vision se trouble un peu plus.</p><p>Les cibles sont petites : les lancers doivent être précis.</p><p>Tu as 60 secondes pour marquer un maximum de points.</p><button class="action" id="play">ENTRER DANS LE RANCH</button></div></div>
 <div id="end" class="overlay hidden"><div class="card"><h1>FIN DE PARTIE !</h1><p id="finalScore"></p><p id="finalMessage">Le ranch se souviendra de toi.</p><div id="saveArea"><p>Entre tes 3 initiales pour le classement :</p><input id="initials" maxlength="3" minlength="3" value="AAA" aria-label="Trois initiales"><button class="action" id="saveScore">ENREGISTRER LE SCORE</button></div><div id="leaderboard"></div><button class="action" id="again">REJOUER</button></div></div>
-<div id="pauseScreen" class="overlay hidden"><div class="card"><h1>PAUSE</h1><p>Reprends ton souffle, cowboy.</p><button class="action" id="resume">REPRENDRE</button></div></div>
+<div id="pauseScreen" class="overlay hidden"><div class="card"><h1>PAUSE</h1><p>Reprends-toi, cowboy.Le boudin c'est charnière. </p><button class="action" id="resume">REPRENDRE</button></div></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 (()=> {
 const mount=document.getElementById('scene');
-if(!window.THREE){mount.innerHTML='<div style="padding:30px;color:white">Le moteur 3D n’a pas pu charger. Vérifie ta connexion puis recharge la page.</div>';return;}
+if(!window.THREE){mount.innerHTML='<div style="padding:30px;color:white">Ton boudin est mal cuit. Vérifie ta connexion puis recharge la page.</div>';return;}
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x87603d);scene.fog=new THREE.Fog(0x87603d,17,42);
 const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,100);camera.position.set(0,3.25,10.7);camera.lookAt(0,2.55,-4.5);
 const renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.15));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;mount.appendChild(renderer.domElement);
