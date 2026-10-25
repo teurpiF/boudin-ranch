@@ -303,7 +303,7 @@ function removeTarget(g){scene.remove(g);const i=targets.indexOf(g);if(i>=0)targ
 function start(){document.getElementById('start').classList.add('hidden');document.getElementById('end').classList.add('hidden');document.getElementById('pauseScreen').classList.add('hidden');score=0;elapsed=0;running=true;paused=false;last=performance.now();spawnAt=0;targets.slice().forEach(removeTarget);document.getElementById('score').textContent='SCORE  0';document.getElementById('timer').textContent='TEMPS  60';mount.style.filter='blur(0px)';showToast('À TOI DE JOUER !')}
 function getScores(){try{return JSON.parse(localStorage.getItem('boudinRanchScores')||'[]')}catch(e){return []}}
 function renderScores(){const rows=getScores().sort((a,b)=>b.score-a.score).slice(0,10);document.getElementById('leaderboard').innerHTML='<b>MEILLEURS SCORES</b>'+ (rows.length?rows.map((r,i)=>`<div><span><span class=\"rank\">${i+1}.</span> ${String(r.name||'AAA').slice(0,3)}</span><b>${r.score}</b></div>`).join(''):'<p>Pas encore de score enregistré.</p>')}
-function finish(){running=false;document.getElementById('finalScore').textContent='Score final : '+score+' points';document.getElementById('finalMessage').textContent=score>=300?'LÉGENDE DU RANCH !':score>=100?'BELLE PERFORMANCE !':'LA CIBLE A ÉTÉ MANQUÉE.';document.getElementById('saveArea').style.display='block';document.getElementById('initials').value='AAA';document.getElementById('end').classList.remove('hidden');renderScores()}
+function finish(){running=false;document.getElementById('finalScore').textContent='Score final : '+score+' points';document.getElementById('finalMessage').textContent=score>=300?'LE ROI DU BOUDIN !':score>=100?'LE MOMENT CHATNIÈRE !':'LA CIBLE A ÉTÉ MANQUÉE.';document.getElementById('saveArea').style.display='block';document.getElementById('initials').value='AAA';document.getElementById('end').classList.remove('hidden');renderScores()}
 document.getElementById('saveScore').onclick=()=>{const name=(document.getElementById('initials').value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3)||'AAA').padEnd(3,'A');const rows=getScores();rows.push({name,score,date:Date.now()});rows.sort((a,b)=>b.score-a.score);try{localStorage.setItem('boudinRanchScores',JSON.stringify(rows.slice(0,10)));}catch(e){}document.getElementById('saveArea').style.display='none';renderScores();showToast('SCORE ENREGISTRÉ !')};
 document.getElementById('initials').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3)});
 function launch(x,y,dx,dy){
@@ -315,8 +315,8 @@ function launch(x,y,dx,dy){
   // Tache persistante sur la cible : le personnage continue sa route.
   const stain=ico(best,0,1.4,.205,.22,.18,.035,mat(0x8e101b),0);stain.rotation.z=Math.random()*.8-.4;
   for(let i=0;i<3;i++){const drop=ico(best,(Math.random()-.5)*.35,1.2-Math.random()*.25,.22,.045,.07,.025,mat(0x9d1821),0);drop.rotation.z=Math.random()*.8-.4}
-  showToast(best.userData.isPig?'COSTUME TOUCHÉ ! +50':'TOUCHÉ ! +10')
- }else showToast('RATÉ !')
+  showToast(best.userData.isPig?'T’AS TOUCHÉ LE COCHON ! +50':'PERSONNAGE ! +10')
+ }else showToast('T’ES MAUVAIS !')
 }
 renderer.domElement.addEventListener('pointerdown',e=>{if(!running||paused)return;gesture={x:e.clientX,y:e.clientY,id:e.pointerId};try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_){} });
 renderer.domElement.addEventListener('pointerup',e=>{if(!gesture)return;const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;const distance=Math.hypot(dx,dy);if(distance>=42)launch(gesture.x,gesture.y,dx,dy);else showToast('FAIS UN GESTE DE LANCER !');gesture=null;});
