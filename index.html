@@ -342,7 +342,7 @@ function animate(t){requestAnimationFrame(animate);const dt=Math.min((t-last)/10
  if(running&&!paused){
   elapsed+=dt;const left=Math.max(0,60-elapsed);document.getElementById('timer').textContent='TEMPS  '+Math.ceil(left);
   const stage=Math.min(5,Math.floor(elapsed/10));mount.style.filter=stage===0?'blur(0px)':'blur('+(stage*.7)+'px)';
-  if(elapsed>=10&&Math.floor(elapsed/10)>Math.floor((elapsed-dt)/10)){showToast(['','HOP, UN COUO DE ROUGE','DEUXIEME RASADE DE PINARD','IL RESTE DU GUIGNOLET ?','C’EST PAS L'HEURE DES POUCES EN AVANT ?','LE MOMENT CHARNIÈRE...'][stage]||'VISION TROUBLE');}
+  if(elapsed>=10&&Math.floor(elapsed/10)>Math.floor((elapsed-dt)/10)){showToast(['','HOP UN COUP DE ROUGE','DEUXIEME RASADE DE PINARD','IL RESTE DU GUIGNOLET ?','C’EST PAS L’HEURE DES POUCES EN AVANT ?','LE MOMENT CHARNIÈRE...'][stage]||'VISION TROUBLE');}
   if(t-spawnAt>650+Math.random()*300){spawn();spawnAt=t}
   for(const g of targets.slice()){g.position.x+=g.userData.vx*dt;g.position.y=Math.abs(Math.sin(t*.006+g.userData.phase))*.06;g.rotation.y=g.userData.vx>0?0:Math.PI;if(Math.abs(g.position.x)>15)removeTarget(g)}
   if(left<=0)finish()
